@@ -38,7 +38,7 @@ GLOBAL.addPreprocessor = function(pp) {
   steps.push(pp);
 };
 
-require(path.join(process.cwd(), args._[0]));
+require(path.resolve(process.cwd(), args._[0]));
 
 var ctx = new jstyle.Context();
 
