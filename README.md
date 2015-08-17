@@ -28,5 +28,5 @@ addEntry('main.css', new StyleSheet({
 ```
 
 ```sh
-$ jstyle --minify css.js
+$ jstyle -f css.js
 ```

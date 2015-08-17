@@ -1,28 +1,42 @@
 #!/usr/bin/env node
 
 var path = require('path');
+var fs = require('fs');
 var jstyle = require('jstyle');
 
 var args = require('minimist')(process.argv.slice(2), {
   stopEarly: true,
-  boolean: ['minify'],
-  string: ['environment', 'define'],
+  boolean: ['minify-class-names', 'closure-map', 'json'],
+  string: ['define', 'output', 'file', 'closure-map-prefix'],
   alias: {
-    'm': 'minify',
-    'e': 'environment',
-    'd': 'define'
+    'd': 'define',
+    'o': 'output',
+    'f': 'file'
   }
 });
 
 function _usage() {
-  process.stdout.write('Usage: jstyle [file.js]\n\n');
-  process.stdout.write('\t -m --minify\tMinify class names\n')
+  process.stdout.write('Usage: jstyle -f [file.js]\n\n');
+  process.stdout.write('\t-f --file\t\t\tInput file [string]\n');
+  process.stdout.write('\t-o --output\t\t\tOutput directory [string]\n');
+  process.stdout.write('\t   --json\t\t\tJSON output\n');
+  process.stdout.write('\t   --minify-class-names\t\tMinify class names\n');
+  process.stdout.write('\t   --closure-map\t\tGenerate google-closure class names map\n');
+  process.stdout.write('\t   --closure-map-prefix\t\tClosure map package prefix [string]\n');
 }
 
-if (args._.length === 0) {
+if (args.file === void 0) {
   _usage();
   process.exit(1);
 }
+
+var inputFile = args['file'];
+var fileName = path.basename(inputFile, '.js');
+var outputPath = args['output'] || './';
+var jsonOutput = args['json'] || false;
+var minifyClassNames = args['minify-class-names'] || false;
+var closureMap = args['closure-map'] || false;
+var closureMapPrefix = args['closure-map-prefix'] || 'css.map';
 
 var entries = [];
 var steps = [];
@@ -38,14 +52,14 @@ GLOBAL.addPreprocessor = function(pp) {
   steps.push(pp);
 };
 
-require(path.resolve(process.cwd(), args._[0]));
+require(path.resolve(process.cwd(), inputFile));
 
-var ctx = new jstyle.Context();
-
-if (args.minify) {
+if (minifyClassNames) {
   steps.push(jstyle.minifyClassNames);
 }
 steps.push(jstyle.convertToString);
+
+var ctx = new jstyle.Context();
 
 var result = {
   entries: entries.map(function(e) {
@@ -59,5 +73,22 @@ var result = {
   map: ctx.map
 };
 
-process.stdout.write(JSON.stringify(result, null, 2));
+if (jsonOutput) {
+  process.stdout.write(JSON.stringify(result, null, 2));
+} else {
+  for (var i = 0; i < result.entries.length; i++) {
+    var e = result.entries[i];
+    fs.writeFileSync(path.join(outputPath, e.name), e.css);
+  }
+  if (minifyClassNames) {
+    var mapString = JSON.stringify(result.map, null, 2);
+    fs.writeFileSync(path.join(outputPath, fileName + '_map.json'), mapString);
+    if (args['closure-map']) {
+      fs.writeFileSync(path.join(outputPath, fileName + '_map.js'),
+          'goog.provide(\'' + closureMapPrefix + '.' + fileName + '\');\n\n' +
+          'goog.setCssNameMapping(' + mapString + ', \'BY_WHOLE\');\n');
+    }
+  }
+}
+
 process.exit(0);
