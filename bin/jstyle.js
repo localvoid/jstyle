@@ -3,6 +3,8 @@
 var path = require('path');
 var fs = require('fs');
 var jstyle = require('jstyle');
+var minifyClassNamesPass = require('jstyle/minify_class_names');
+var convertToStringPass = require('jstyle/convert_to_string');
 
 var args = require('minimist')(process.argv.slice(2), {
   stopEarly: true,
@@ -55,9 +57,9 @@ GLOBAL.addPreprocessor = function(pp) {
 require(path.resolve(process.cwd(), inputFile));
 
 if (minifyClassNames) {
-  steps.push(jstyle.minifyClassNames);
+  steps.push(minifyClassNamesPass);
 }
-steps.push(jstyle.convertToString);
+steps.push(convertToStringPass);
 
 var ctx = new jstyle.Context();
 
