@@ -1,6 +1,6 @@
 {
   "name": "jstyle",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "jstyle is a simple program that compiles javascript to css files",
   "license": "BSD",
   "author": {

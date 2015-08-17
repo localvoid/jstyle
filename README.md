@@ -53,7 +53,7 @@ Input javascript file.
 ##### --output
 
 Type: `String`  
-Alias: `-o`
+Alias: `-o`  
 Default: Current working directory
 
 Output directory.
@@ -70,7 +70,8 @@ Minify class names and generate json map with minified names.
 Type: `Boolean`  
 Default: `false`
 
-Generate javascript file with minified class names for google-closure library.
+Generate javascript file with minified class names for google-closure
+library.
 
 ##### --closure-map-prefix
 
