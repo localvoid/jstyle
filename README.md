@@ -2,7 +2,7 @@
 
 jstyle is a simple program that compiles javascript to css files.
 
-## Example
+## Usage Example
 
 ```js
 var base = new StyleSheet({
@@ -30,3 +30,58 @@ addEntry('main.css', new StyleSheet({
 ```sh
 $ jstyle -f css.js
 ```
+
+## API
+
+##### StyleSheet(opts)
+##### select(selectors, children)
+##### media(conditions, children)
+##### keyframes(id, children)
+##### addEntry(name, stylesheet)
+##### addPreprocessor(preprocessor)
+
+## CLI Options
+
+##### --file
+
+Type: `String`  
+Alias: `-f`
+
+Input javascript file.
+
+##### --output
+
+Type: `String`  
+Alias: `-o`
+Default: Current working directory
+
+Output directory.
+
+##### --minify-class-names
+
+Type: `Boolean`
+Default: `false`
+
+Minify class names and generate json map with minified names.
+
+##### --closure-map
+
+Type: `Boolean`
+Default: `false`
+
+Generate javascript file with minified class names for google-closure library.
+
+##### --closure-map-prefix
+
+Type: `String`  
+Default: `css.map`
+
+Package name prefix for closure map file.
+
+##### --json
+
+Type: `Boolean`
+Default: `false`
+
+Write to stdout as json result instead of writing to files.
+
