@@ -82,14 +82,14 @@ if (jsonOutput) {
     var e = result.entries[i];
     fs.writeFileSync(path.join(outputPath, e.name), e.css);
   }
+  var mapString = JSON.stringify(result.map, null, 2);
   if (minifyClassNames) {
-    var mapString = JSON.stringify(result.map, null, 2);
     fs.writeFileSync(path.join(outputPath, fileName + '_map.json'), mapString);
-    if (args['closure-map']) {
-      fs.writeFileSync(path.join(outputPath, fileName + '_map.js'),
-          'goog.provide(\'' + closureMapPrefix + '.' + fileName + '\');\n\n' +
-          'goog.setCssNameMapping(' + mapString + ', \'BY_WHOLE\');\n');
-    }
+  }
+  if (closureMap) {
+    fs.writeFileSync(path.join(outputPath, fileName + '_map.js'),
+        'goog.provide(\'' + closureMapPrefix + '.' + fileName + '\');\n\n' +
+        'goog.setCssNameMapping(' + mapString + ', \'BY_WHOLE\');\n');
   }
 }
 
