@@ -46,6 +46,7 @@ var steps = [];
 GLOBAL.StyleSheet = jstyle.StyleSheet;
 GLOBAL.select = jstyle.select;
 GLOBAL.media = jstyle.media;
+GLOBAL.keyframes = jstyle.keyframes;
 GLOBAL.prop = jstyle.prop;
 GLOBAL.addEntry = function(name, stylesheet) {
   entries.push({name: name, stylesheet: stylesheet});
