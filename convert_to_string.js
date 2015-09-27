@@ -5,35 +5,49 @@ var Visitor = require('./visitor');
 
 function ConvertToStringVisitor() {
   this.result = '';
-  this._propsWritten = false;
+  this.depth = 0;
 }
 util.inherits(ConvertToStringVisitor, Visitor);
 
 ConvertToStringVisitor.prototype.visitSelectorRule = function(rule) {
-  this.result += rule.data.join(',') + '{';
+  this._writePadding();
+  this.result += rule.data.join(',') + ' {\n';
+  this.depth++;
   Visitor.prototype.visitSelectorRule.call(this, rule);
-  if (this._propsWritten) {
-    this._propsWritten = false;
-    this.result = this.result.slice(0, -1); // remove ";"
-  }
-  this.result += '}';
+  this.depth--;
+  this._writePadding();
+  this.result += '}\n\n';
 };
 
 ConvertToStringVisitor.prototype.visitMediaRule = function(rule) {
-  this.result += '@media ' + rule.data + '{';
+  this._writePadding();
+  this.result += '@media ' + rule.data + ' {\n';
+  this.depth++;
   Visitor.prototype.visitMediaRule.call(this, rule);
-  this.result += '}';
+  this.depth--;
+  this._writePadding();
+  this.result += '}\n\n';
 };
 
 ConvertToStringVisitor.prototype.visitKeyframesRule = function(rule) {
-  this.result += '@keyframes ' + rule.data + '{';
+  this._writePadding();
+  this.result += '@keyframes ' + rule.data + ' {\n';
+  this.depth--;
   Visitor.prototype.visitKeyframesRule.call(this, rule);
-  this.result += '}';
+  this.depth--;
+  this._writePadding();
+  this.result += '}\n\n';
 };
 
 ConvertToStringVisitor.prototype.visitProperty = function(property) {
-  this.result += property.name + ':' + property.value + ';';
-  this._propsWritten = true;
+  this._writePadding();
+  this.result += property.name + ': ' + property.value + ';\n';
+};
+
+ConvertToStringVisitor.prototype._writePadding = function() {
+  for (var i = 0; i < this.depth; i++) {
+    this.result += '  ';
+  }
 };
 
 /**
