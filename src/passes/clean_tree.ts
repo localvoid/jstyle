@@ -1,6 +1,7 @@
 import {Visitor} from "../visitor";
-import {RuleChildren, Rule} from "../rule";
+import {RuleChildren, Rule, SelectorRule} from "../rule";
 import {Property} from "../property";
+import {Placeholder} from "../placeholder";
 
 class CleanTree extends Visitor {
   dirty: boolean;
@@ -34,7 +35,15 @@ class CleanTree extends Visitor {
       this.dirty = true;
       return null;
     }
-    return rule;
+    return super.visitRule(rule);
+  }
+
+  visitSelectorRule(rule: SelectorRule): SelectorRule | null {
+    if (rule.selector instanceof Placeholder && rule.selector.data.length === 0) {
+      this.dirty = true;
+      return null;
+    }
+    return super.visitSelectorRule(rule);
   }
 }
 

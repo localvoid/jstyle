@@ -8,9 +8,10 @@ export {bundle} from "./bundle";
 export {Compiler} from "./compiler";
 
 import {RuleChildren, SelectorRule, MediaRule, KeyframesRule} from "./rule";
+import {Placeholder} from "./placeholder";
 
-export function select(selectors: string | string[], children: RuleChildren): SelectorRule {
-  if (Array.isArray(selectors)) {
+export function select(selectors: string | string[] | Placeholder, children: RuleChildren): SelectorRule {
+  if (Array.isArray(selectors) || selectors instanceof Placeholder) {
     return new SelectorRule(selectors, children);
   }
   return new SelectorRule([selectors], children);

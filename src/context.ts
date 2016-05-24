@@ -1,3 +1,5 @@
+import {Placeholder} from "./placeholder";
+
 const TagNameAlphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
 const ClassNameAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -180,6 +182,7 @@ export class Context {
   private readonly _tagNamePrefix: string;
   private _nextTagNameId: number;
   private _nextClassNameId: number;
+  private _placeholders: Map<string | Symbol, Placeholder>;
 
   constructor(options?: ContextOptions) {
     let minifyTagNames = false;
@@ -207,6 +210,7 @@ export class Context {
     this._tagNamePrefix = tagNamePrefix;
     this._nextTagNameId = 0;
     this._nextClassNameId = 0;
+    this._placeholders = new Map<string | Symbol, Placeholder>();
   }
 
   tagName(tagName: string): string {
@@ -266,5 +270,14 @@ export class Context {
     }
 
     return className;
+  }
+
+  placeholder(name: string | Symbol): Placeholder {
+    let result = this._placeholders.get(name);
+    if (result === undefined) {
+      result = new Placeholder();
+      this._placeholders.set(name, result);
+    }
+    return result;
   }
 }

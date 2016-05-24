@@ -11,13 +11,15 @@ function _noRules(context: Context): Rule[] {
 export class Module {
   readonly id: number;
   dependencies: Module[];
-  private _build: (context: Context, prop: PropertyFactory) => Rule[];
+  private _rules: ((context: Context, prop: PropertyFactory) => Rule[]) | null;
+  private _init: ((context: Context, prop: PropertyFactory) => void) | null;
   private _propertyFactory: PropertyFactory;
 
   constructor() {
     this.id = _nextId++;
     this.dependencies = [];
-    this._build = _noRules;
+    this._rules = _noRules;
+    this._init = null;
     this._propertyFactory = DefaultPropertyFactory;
   }
 
@@ -31,12 +33,23 @@ export class Module {
     return this;
   }
 
+  init(init: (context: Context, prop: PropertyFactory) => void): Module {
+    this._init = init;
+    return this;
+  }
+
   rules(build: (context: Context, prop: PropertyFactory) => Rule[]): Module {
-    this._build = build;
+    this._rules = build;
     return this;
   }
 
   build(context: Context): Rule[] {
-    return this._build(context, this._propertyFactory);
+    if (this._init !== null) {
+      this._init(context, this._propertyFactory);
+    }
+    if (this._rules !== null) {
+      return this._rules(context, this._propertyFactory);
+    }
+    return [];
   }
 }

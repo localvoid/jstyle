@@ -1,4 +1,5 @@
 import {Property} from "./property";
+import {Placeholder} from "./placeholder";
 
 export type RuleChildrenValue = Rule | Property | null | RuleChildren;
 export interface RuleChildren extends Array<RuleChildrenValue> {}
@@ -12,9 +13,9 @@ export abstract class Rule {
 }
 
 export class SelectorRule extends Rule {
-  readonly selector: string[];
+  readonly selector: string[] | Placeholder;
 
-  constructor(selector: string[], children: RuleChildren) {
+  constructor(selector: string[] | Placeholder, children: RuleChildren) {
     super(children);
     this.selector = selector;
   }
