@@ -1,8 +1,10 @@
 {
   "name": "jstyle",
-  "version": "0.1.2",
-  "description": "jstyle is a simple program that compiles javascript to css files",
-  "license": "MIT",
+  "version": "0.2.0",
+  "main": "dist/js/jstyle.js",
+  "typings": "dist/typings/jstyle.d.ts",
+  "description": "jstyle is a library that compiles javascript css files",
+  "license": "Apache-2.0",
   "author": {
     "name": "Boris Kaul",
     "email": "localvoid@gmail.com",
@@ -22,11 +24,17 @@
     "url": "https://github.com/localvoid/jstyle/issues"
   },
   "github": "https://github.com/localvoid/jstyle",
-  "bin": {
-    "jstyle": "bin/jstyle.js"
-  },
-  "dependencies": {
-    "minimist": "^1.1.3"
-  },
-  "devDependencies": {}
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "devDependencies": {
+    "del": "^2.2.0",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-tslint": "^5.0.0",
+    "gulp-typescript": "^2.13.4",
+    "merge2": "^1.0.2",
+    "tslint": "^3.10.2",
+    "typescript": "^1.9.0-dev.20160523-1.0"
+  }
 }
