@@ -1,5 +1,8 @@
 import {Context} from "./context";
+import {Rule} from "./rule";
 import {bundle} from "./bundle";
+import {flattenProperties} from "./passes/flatten_properties";
+import {uniqueProperties} from "./passes/unique_properties";
 import {emitCss} from "./emit_css";
 import * as fs from "fs";
 import * as path from "path";
@@ -7,9 +10,16 @@ import * as mkdirp from "mkdirp";
 
 export class Compiler {
   readonly context: Context;
+  readonly passes: Array<(rule: Rule) => Rule>;
 
   constructor(context: Context) {
     this.context = context;
+    this.passes = [flattenProperties, uniqueProperties];
+  }
+
+  addPass(pass: (rule: Rule) => Rule): Compiler {
+    this.passes.push(pass);
+    return this;
   }
 
   compile(file: string, outFile: string): Promise<Compiler> {
@@ -26,7 +36,11 @@ export class Compiler {
           reject(err);
         } else {
           const entry = require(file);
-          const rules = bundle(entry.entry, this.context);
+          let rules = bundle(entry.entry, this.context);
+          for (let i = 0; i < this.passes.length; i++) {
+            rules = rules.map((r) => this.passes[i](r));
+            console.log(rules);
+          }
           const result = rules.map((r) => emitCss(r)).join("");
           fs.writeFile(outFile, result, () => resolve(this));
         }
