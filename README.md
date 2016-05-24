@@ -7,7 +7,7 @@ jstyle is a javascript to css compiler.
 `main.js`
 
 ```js
-import {Module, Context, select, bundle, emitCss} from "jstyle";
+import {Module, select} from "jstyle";
 
 const Base = new Module()
   .rules((c, p) => [
@@ -19,9 +19,9 @@ const Base = new Module()
 export const entry = new Module()
   .require(Base),
   .rules((c, p) => [
-    select([".Main"], [
+    select([`.${c.className("Main")}`], [
       p.top("20px")
-    ])
+    ]),
   ]);
 ```
 
