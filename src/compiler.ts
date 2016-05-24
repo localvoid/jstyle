@@ -4,6 +4,7 @@ import {bundle} from "./bundle";
 import {flattenProperties} from "./passes/flatten_properties";
 import {uniqueProperties} from "./passes/unique_properties";
 import {cleanTree} from "./passes/clean_tree";
+import {sortProperties} from "./passes/sort_properties";
 import {emitCss} from "./emit_css";
 import * as fs from "fs";
 import * as path from "path";
@@ -15,7 +16,7 @@ export class Compiler {
 
   constructor(context: Context) {
     this.context = context;
-    this.passes = [flattenProperties, uniqueProperties, cleanTree];
+    this.passes = [flattenProperties, uniqueProperties, cleanTree, sortProperties];
   }
 
   addPass(pass: (rule: Rule) => Rule): Compiler {
