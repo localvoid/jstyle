@@ -1,6 +1,6 @@
 import {Context} from "./context";
 import {Rule} from "./rule";
-import {PropertyFactory, DefaultPropertyFactory} from "./property";
+import {PropertyFactory, PropertyFactoryOptions, DefaultPropertyFactory} from "./property";
 
 let _nextId = 0;
 
@@ -19,6 +19,11 @@ export class Module {
     this.dependencies = [];
     this._build = _noRules;
     this._propertyFactory = DefaultPropertyFactory;
+  }
+
+  propertyFactoryOptions(propertyFactoryOptions: PropertyFactoryOptions): Module {
+    this._propertyFactory = new PropertyFactory(propertyFactoryOptions);
+    return this;
   }
 
   require(dependencies: Module[]): Module {

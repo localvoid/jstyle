@@ -26,8 +26,8 @@ export type Display = "none" | "inline" | "block" | "inline-block" | "contents" 
 export class PropertyFactory {
   readonly defaultSizeUnit: string;
 
-  constructor() {
-    this.defaultSizeUnit = "px";
+  constructor(options?: PropertyFactoryOptions) {
+    this.defaultSizeUnit = options && options.defaultSizeUnit || "px";
   }
 
   create(name: string, value: string): Property {
