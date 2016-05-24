@@ -22,6 +22,8 @@ class CleanTree extends Visitor {
         } else if (child instanceof Property) {
           newChildren.push(this.visitProperty(child));
         }
+      } else {
+        this.dirty = true;
       }
     }
     return newChildren;
