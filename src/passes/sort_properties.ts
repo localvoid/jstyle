@@ -9,8 +9,11 @@ class SortProperties extends Visitor {
     super();
   }
 
-  visitSelectorRule(rule: SelectorRule): SelectorRule {
+  visitSelectorRule(rule: SelectorRule): SelectorRule | null {
     const ret = super.visitSelectorRule(rule);
+    if (ret === null) {
+      return ret;
+    }
     return new SelectorRule(
       ret.selector,
       ret.children.sort((a: Property, b: Property) =>
@@ -18,7 +21,7 @@ class SortProperties extends Visitor {
   }
 }
 
-export function sortProperties(rule: Rule): Rule {
+export function sortProperties(rule: Rule): Rule | null {
   const visitor = new SortProperties();
   return visitor.visitRule(rule);
 }

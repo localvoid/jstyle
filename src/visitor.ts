@@ -17,7 +17,7 @@ export abstract class Visitor {
     return newChildren;
   }
 
-  visitRule(rule: Rule): Rule {
+  visitRule(rule: Rule): Rule | null {
     if (rule instanceof SelectorRule) {
       return this.visitSelectorRule(rule);
     } else if (rule instanceof MediaRule) {
@@ -28,19 +28,19 @@ export abstract class Visitor {
     return rule;
   }
 
-  visitSelectorRule(rule: SelectorRule): SelectorRule {
+  visitSelectorRule(rule: SelectorRule): SelectorRule | null {
     return new SelectorRule(rule.selector, this.visitChildren(rule.children));
   }
 
-  visitMediaRule(rule: MediaRule): MediaRule {
+  visitMediaRule(rule: MediaRule): MediaRule | null {
     return new MediaRule(rule.query, this.visitChildren(rule.children));
   }
 
-  visitKeyframesRule(rule: KeyframesRule): KeyframesRule {
+  visitKeyframesRule(rule: KeyframesRule): KeyframesRule | null {
     return new KeyframesRule(rule.id, this.visitChildren(rule.children));
   }
 
-  visitProperty(property: Property): Property {
+  visitProperty(property: Property): Property | null {
     return property;
   }
 }

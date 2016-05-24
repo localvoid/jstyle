@@ -31,7 +31,7 @@ class FlattenProperties extends Visitor {
     return newChildren;
   }
 
-  visitRule(rule: Rule): Rule {
+  visitRule(rule: Rule): Rule | null {
     this._currentRuleStack.push(rule);
     this._currentRule = rule;
     const ret = super.visitRule(rule);
@@ -45,7 +45,7 @@ class FlattenProperties extends Visitor {
   }
 }
 
-export function flattenProperties(rule: Rule): Rule {
+export function flattenProperties(rule: Rule): Rule | null {
   const visitor = new FlattenProperties();
   return visitor.visitRule(rule);
 }

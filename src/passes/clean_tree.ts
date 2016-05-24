@@ -27,7 +27,7 @@ class CleanTree extends Visitor {
     return newChildren;
   }
 
-  visitRule(rule: Rule): Rule {
+  visitRule(rule: Rule): Rule | null {
     if (rule.children.length === 0) {
       this.dirty = true;
       return null;
@@ -36,12 +36,13 @@ class CleanTree extends Visitor {
   }
 }
 
-export function cleanTree(rule: Rule): Rule {
+export function cleanTree(rule: Rule): Rule | null {
   const visitor = new CleanTree();
+  let newRule = rule as Rule | null;
   do {
-    rule = visitor.visitRule(rule);
     visitor.dirty = false;
-  } while (visitor.dirty);
+    newRule = visitor.visitRule(newRule!);
+  } while (visitor.dirty && newRule !== null);
 
-  return rule;
+  return newRule;
 }

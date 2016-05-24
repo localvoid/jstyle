@@ -12,14 +12,14 @@ import * as mkdirp from "mkdirp";
 
 export class Compiler {
   readonly context: Context;
-  readonly passes: Array<(rule: Rule) => Rule>;
+  readonly passes: Array<(rule: Rule) => Rule | null>;
 
   constructor(context: Context) {
     this.context = context;
     this.passes = [flattenProperties, uniqueProperties, cleanTree, sortProperties];
   }
 
-  addPass(pass: (rule: Rule) => Rule): Compiler {
+  addPass(pass: (rule: Rule) => Rule | null): Compiler {
     this.passes.push(pass);
     return this;
   }
@@ -40,7 +40,14 @@ export class Compiler {
           const entry = require(file);
           let rules = bundle(entry.entry, this.context);
           for (let i = 0; i < this.passes.length; i++) {
-            rules = rules.map((r) => this.passes[i](r));
+            let newRules = [] as Rule[];
+            for (let j = 0; j < rules.length; j++) {
+              const rule = this.passes[i](rules[j]);
+              if (rule !== null) {
+                newRules.push(rule);
+              }
+            }
+            rules = newRules;
           }
           const result = rules.map((r) => emitCss(r)).join("");
           fs.writeFile(outFile, result, () => resolve(this));

@@ -12,7 +12,7 @@ class EmitCssVisitor extends Visitor {
     this.depth = 0;
   }
 
-  visitSelectorRule(rule: SelectorRule): SelectorRule {
+  visitSelectorRule(rule: SelectorRule): SelectorRule | null {
     this._writePadding();
     this.result += rule.selector.join(",") + " {\n";
     this.depth++;
@@ -23,7 +23,7 @@ class EmitCssVisitor extends Visitor {
     return ret;
   }
 
-  visitMediaRule(rule: MediaRule): MediaRule {
+  visitMediaRule(rule: MediaRule): MediaRule | null {
     this._writePadding();
     this.result += `@media ${rule.query} {\n`;
     this.depth++;
@@ -35,7 +35,7 @@ class EmitCssVisitor extends Visitor {
     return ret;
   }
 
-  visitKeyframesRule(rule: KeyframesRule): KeyframesRule {
+  visitKeyframesRule(rule: KeyframesRule): KeyframesRule | null {
     this._writePadding();
     this.result += `@keyframes ${rule.id} {\n`;
     this.depth--;
@@ -47,7 +47,7 @@ class EmitCssVisitor extends Visitor {
     return ret;
   }
 
-  visitProperty(property: Property): Property {
+  visitProperty(property: Property): Property | null {
     this._writePadding();
     this.result += `${property.name}: ${property.value};\n`;
 

@@ -1,6 +1,6 @@
 import {Property} from "./property";
 
-export type RuleChildrenValue = Rule | Property | RuleChildren;
+export type RuleChildrenValue = Rule | Property | null | RuleChildren;
 export interface RuleChildren extends Array<RuleChildrenValue> {}
 
 export abstract class Rule {
