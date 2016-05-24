@@ -4,6 +4,8 @@ jstyle is a javascript to css compiler.
 
 ## Usage Example
 
+`main.js`
+
 ```js
 import {Module, Context, select, bundle, emitCss} from "jstyle";
 
@@ -14,16 +16,27 @@ const Base = new Module()
     ]),
   ]);
 
-const Entry = new Module()
+export const entry = new Module()
   .require(Base),
   .rules((c, p) => [
     select([".Main"], [
       p.top("20px")
     ])
   ]);
+```
 
-const context = new Context();
-const bundle = bundle(Entry, context);
+Build script:
 
-console.log(bundle.map((r) => emitCss(r)).join(""));
+```js
+import {Compiler, Context} from "jstyle";
+
+const compiler = new Compiler(new Context({
+  minifyClassNames: true,
+}));
+
+compiler.compile("main.js")
+  .then((c) => c.writeClassNames("class_names.json"))
+  .then((c) => {
+    console.log("Finished");
+  });
 ```

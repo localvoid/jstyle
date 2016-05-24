@@ -8,11 +8,9 @@
     "removeComments": false,
     "moduleResolution": "node"
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "examples",
-    "tests"
+  "files": [
+    "src/*.ts",
+    "typings/index.d.ts"
   ],
   "compileOnSave": false
 }

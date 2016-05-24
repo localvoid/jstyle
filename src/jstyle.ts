@@ -5,6 +5,7 @@ export {Module} from "./module";
 export {Visitor} from "./visitor";
 export {emitCss} from "./emit_css";
 export {bundle} from "./bundle";
+export {Compiler} from "./compiler";
 
 import {RuleChildren, SelectorRule, MediaRule, KeyframesRule} from "./rule";
 

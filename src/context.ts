@@ -173,8 +173,8 @@ export interface ContextOptions {
 export class Context {
   private readonly _minifyTagNames: boolean;
   private readonly _minifyClassNames: boolean;
-  private readonly tagNameRegistry: {[name: string]: string};
-  private readonly classNameRegistry: {[name: string]: string};
+  public readonly tagNameRegistry: {[name: string]: string};
+  public readonly classNameRegistry: {[name: string]: string};
   private readonly _tagNameReverseIndex: {[name: string]: string};
   private readonly _classNameReverseIndex: {[name: string]: string};
   private readonly _tagNamePrefix: string;
