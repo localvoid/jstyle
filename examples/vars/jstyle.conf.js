@@ -12,7 +12,9 @@ module.exports = {
   entries: {
     "main.css": main,
   },
-  env: {
-    "margin": 10,
+  env: () => {
+    const env = new Map();
+    env.set("margin", 10);
+    return env;
   },
 };

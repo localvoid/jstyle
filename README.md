@@ -31,7 +31,7 @@ const Base = new jstyle.Module()
 export const Main = new jstyle.Module()
   .require(Base),
   .rules((c, p) => [
-    jstyle.select([`.${c.className("Main")}`], [
+    jstyle.select(c.className("Main"), [
       p.top("20px")
     ]),
   ]);
@@ -40,7 +40,6 @@ module.exports = {
   entries: {
     "main.css": Main,
   },
-  minifyTagNames: true,
   minifyClassNames: true,
 };
 ```

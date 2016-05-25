@@ -170,7 +170,7 @@ export interface ContextOptions {
   minifyTagNames?: boolean;
   minifyClassNames?: boolean;
   tagNamePrefix?: string;
-  env?: {[name: string]: any};
+  env?: Map<string | Symbol, any>;
 }
 
 export class Context {
@@ -184,13 +184,12 @@ export class Context {
   private _nextTagNameId: number;
   private _nextClassNameId: number;
   private _placeholders: Map<string | Symbol, Placeholder>;
-  private _variables: Map<string | Symbol, any>;
+  private _env: Map<string | Symbol, any>;
 
   constructor(options?: ContextOptions) {
     const minifyTagNames = options && options.minifyTagNames || false;
     const minifyClassNames = options && options.minifyClassNames || false;
     const tagNamePrefix = options && options.tagNamePrefix || "x";
-    const env = options && options.env || {};
 
     this._minifyTagNames = minifyTagNames;
     this._minifyClassNames = minifyClassNames;
@@ -202,13 +201,7 @@ export class Context {
     this._nextTagNameId = 0;
     this._nextClassNameId = 0;
     this._placeholders = new Map<string | Symbol, Placeholder>();
-    this._variables = new Map<string | Symbol, any>();
-
-    const keys = Object.keys(env);
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      this._variables.set(key, env[key]);
-    }
+    this._env = options && options.env || new Map<string | Symbol, any>();
   }
 
   tagName(tagName: string): string {
@@ -280,7 +273,7 @@ export class Context {
   }
 
   get<V>(name: string | Symbol, defaultValue?: V): V {
-    const r = this._variables.get(name);
+    const r = this._env.get(name);
     if (r === undefined) {
       if (defaultValue === undefined) {
         throw new Error(`Variable "${name}" is undefined.`);
