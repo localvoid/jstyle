@@ -1,4 +1,4 @@
-const jstyle = require("../dist/js/jstyle");
+const jstyle = require("../../dist/js/lib/jstyle");
 
 const moduleA = new jstyle.Module()
   .rules((c, p) => [
@@ -31,7 +31,10 @@ const main = new jstyle.Module()
     ])
   ]);
 
-const context = new jstyle.Context();
-const bundle = jstyle.bundle(main, context);
-
-console.log(bundle.map((r) => jstyle.emitCss(r)).join(""));
+module.exports = {
+  entries: {
+    "main.css": main,
+  },
+  minifyTagNames: true,
+  minifyClassNames: true,
+};

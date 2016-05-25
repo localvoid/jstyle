@@ -183,6 +183,7 @@ export class Context {
   private _nextTagNameId: number;
   private _nextClassNameId: number;
   private _placeholders: Map<string | Symbol, Placeholder>;
+  private _variables: Map<string | Symbol, any>;
 
   constructor(options?: ContextOptions) {
     let minifyTagNames = false;
@@ -211,6 +212,7 @@ export class Context {
     this._nextTagNameId = 0;
     this._nextClassNameId = 0;
     this._placeholders = new Map<string | Symbol, Placeholder>();
+    this._variables = new Map<string | Symbol, any>();
   }
 
   tagName(tagName: string): string {
@@ -279,5 +281,16 @@ export class Context {
       this._placeholders.set(name, result);
     }
     return result;
+  }
+
+  var<V>(name: string | Symbol, defaultValue?: V): V {
+    const r = this._variables.get(name);
+    if (r === undefined) {
+      if (defaultValue === undefined) {
+        throw new Error(`Variable "${name}" is undefined.`);
+      }
+      return defaultValue;
+    }
+    return r as V;
   }
 }

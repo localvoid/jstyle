@@ -5,10 +5,6 @@ import {Property} from "../property";
 const PrefixRegexp = /^-[a-zA-Z0-9]+-/;
 
 class SortProperties extends Visitor {
-  constructor() {
-    super();
-  }
-
   visitSelectorRule(rule: SelectorRule): SelectorRule | null {
     const ret = super.visitSelectorRule(rule);
     if (ret === null) {
