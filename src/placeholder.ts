@@ -5,7 +5,8 @@ export class Placeholder {
     this.data = [];
   }
 
-  append(value: string): void {
+  add(value: string): Placeholder {
     this.data.push(value);
+    return this;
   }
 }

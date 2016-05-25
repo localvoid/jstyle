@@ -1,4 +1,4 @@
-const jstyle = require("../../dist/js/lib/jstyle");
+const jstyle = require("jstyle");
 
 const moduleA = new jstyle.Module()
   .rules((c, p) => [
@@ -26,8 +26,8 @@ const main = new jstyle.Module()
   .require([moduleA, moduleC])
   .rules((c, p) => [
     jstyle.select("html, body", [
-      p.margin("0"),
-      p.padding("0"),
+      p.margin(0),
+      p.padding(0),
     ])
   ]);
 

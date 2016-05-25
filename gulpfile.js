@@ -7,7 +7,7 @@ function build() {
   const merge = require("merge2");
   const tsConfig = require("./tsconfig.json");
 
-  const result = gulp.src(["src/**/*.ts", "typings/index.d.ts"])
+  const result = gulp.src(["src/**/*.ts"])
     .pipe(tslint())
     .pipe(tslint.report("verbose", {
       emitError: false,

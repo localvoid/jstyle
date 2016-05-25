@@ -5,6 +5,10 @@ export {Module} from "./module";
 export {Visitor} from "./visitor";
 export {emitCss} from "./emit_css";
 export {bundle} from "./bundle";
+export {flattenProperties} from "./passes/flatten_properties";
+export {uniqueProperties} from "./passes/unique_properties";
+export {cleanTree} from "./passes/clean_tree";
+export {sortProperties} from "./passes/sort_properties";
 
 import {RuleChildren, SelectorRule, MediaRule, KeyframesRule} from "./rule";
 import {Placeholder} from "./placeholder";

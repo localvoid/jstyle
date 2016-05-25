@@ -170,6 +170,7 @@ export interface ContextOptions {
   minifyTagNames?: boolean;
   minifyClassNames?: boolean;
   tagNamePrefix?: string;
+  env?: {[name: string]: any};
 }
 
 export class Context {
@@ -186,21 +187,10 @@ export class Context {
   private _variables: Map<string | Symbol, any>;
 
   constructor(options?: ContextOptions) {
-    let minifyTagNames = false;
-    let minifyClassNames = false;
-    let tagNamePrefix = "x";
-
-    if (options !== undefined) {
-      if (options.minifyTagNames !== undefined) {
-        minifyTagNames = options.minifyTagNames;
-      }
-      if (options.minifyClassNames !== undefined) {
-        minifyClassNames = options.minifyClassNames;
-      }
-      if (options.tagNamePrefix !== undefined && options.tagNamePrefix.length > 0) {
-        tagNamePrefix = options.tagNamePrefix;
-      }
-    }
+    const minifyTagNames = options && options.minifyTagNames || false;
+    const minifyClassNames = options && options.minifyClassNames || false;
+    const tagNamePrefix = options && options.tagNamePrefix || "x";
+    const env = options && options.env || {};
 
     this._minifyTagNames = minifyTagNames;
     this._minifyClassNames = minifyClassNames;
@@ -213,6 +203,12 @@ export class Context {
     this._nextClassNameId = 0;
     this._placeholders = new Map<string | Symbol, Placeholder>();
     this._variables = new Map<string | Symbol, any>();
+
+    const keys = Object.keys(env);
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      this._variables.set(key, env[key]);
+    }
   }
 
   tagName(tagName: string): string {
@@ -247,17 +243,17 @@ export class Context {
     return tagName;
   }
 
-  className(className: string): string {
+  className(className: string, dotPrefix = true): string {
     if (this._minifyClassNames) {
       let result = this.classNameRegistry[className];
       if (result !== undefined) {
-        return result;
+        return dotPrefix ? "." + result : result;
       } else {
         const alphabetLength = ClassNameAlphabet.length;
 
         do {
           let id = this._nextClassNameId++;
-          result = "";
+          result = dotPrefix ? "." : "";
           while (id > alphabetLength) {
             result += ClassNameAlphabet[id % alphabetLength];
             id = id / alphabetLength | 0;
@@ -271,7 +267,7 @@ export class Context {
       }
     }
 
-    return className;
+    return dotPrefix ? "." + className : className;
   }
 
   placeholder(name: string | Symbol): Placeholder {
@@ -283,7 +279,7 @@ export class Context {
     return result;
   }
 
-  var<V>(name: string | Symbol, defaultValue?: V): V {
+  get<V>(name: string | Symbol, defaultValue?: V): V {
     const r = this._variables.get(name);
     if (r === undefined) {
       if (defaultValue === undefined) {

@@ -9,21 +9,19 @@
     "moduleResolution": "node"
   },
   "files": [
-    "src/lib/bundle.ts",
-    "src/lib/context.ts",
-    "src/lib/emit_css.ts",
-    "src/lib/jstyle.ts",
-    "src/lib/module.ts",
-    "src/lib/placeholder.ts",
-    "src/lib/property.ts",
-    "src/lib/rule.ts",
-    "src/lib/visitor.ts",
-    "src/lib/passes/clean_tree.ts",
-    "src/lib/passes/flatten_properties.ts",
-    "src/lib/passes/sort_properties.ts",
-    "src/lib/passes/unique_properties.ts",
-    "src/bin/jstyle.ts",
-    "typings/index.d.ts"
+    "src/bundle.ts",
+    "src/context.ts",
+    "src/emit_css.ts",
+    "src/jstyle.ts",
+    "src/module.ts",
+    "src/placeholder.ts",
+    "src/property.ts",
+    "src/rule.ts",
+    "src/visitor.ts",
+    "src/passes/clean_tree.ts",
+    "src/passes/flatten_properties.ts",
+    "src/passes/sort_properties.ts",
+    "src/passes/unique_properties.ts"
   ],
   "compileOnSave": false
 }

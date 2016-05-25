@@ -1,11 +1,8 @@
 {
   "name": "jstyle",
   "version": "0.2.0",
-  "main": "dist/js/lib/jstyle.js",
-  "typings": "dist/typings/lib/jstyle.d.ts",
-  "bin": {
-    "jstyle": "dist/js/bin/jstyle.js"
-  },
+  "main": "dist/js/jstyle.js",
+  "typings": "dist/typings/jstyle.d.ts",
   "description": "Javascript to css compiler",
   "license": "Apache-2.0",
   "author": {
@@ -39,9 +36,5 @@
     "merge2": "^1.0.2",
     "tslint": "^3.10.2",
     "typescript": "^1.9.0-dev.20160523-1.0"
-  },
-  "dependencies": {
-    "minimist": "^1.2.0",
-    "mkdirp": "^0.5.1"
   }
 }

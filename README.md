@@ -4,10 +4,16 @@ jstyle is a javascript to css compiler.
 
 ## Usage Example
 
-Install jstyle.
+Install jstyle CLI:
 
 ```sh
-$ npm install -g jstyle
+$ npm install -g jstyle-cli
+```
+
+Instal jstyle into your project:
+
+```sh
+$ npm install --save-dev jstyle
 ```
 
 Create file `jstyle.conf.js`:
@@ -42,5 +48,12 @@ module.exports = {
 Launch `jstyle`:
 
 ```sh
-$ jstyle -c jstyle.conf.js
+$ jstyle -c jstyle.conf.js -o build
 ```
+
+## Examples
+
+- [Basic](https://github.com/localvoid/jstyle/tree/master/examples/basic)
+- [Placeholders](https://github.com/localvoid/jstyle/tree/master/examples/placeholders)
+- [Variables](https://github.com/localvoid/jstyle/tree/master/examples/variables)
+- [TypeScript](https://github.com/localvoid/jstyle/tree/master/examples/typescript)
