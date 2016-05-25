@@ -56,3 +56,4 @@ $ jstyle -c jstyle.conf.js -o build
 - [Placeholders](https://github.com/localvoid/jstyle/tree/master/examples/placeholders)
 - [Variables](https://github.com/localvoid/jstyle/tree/master/examples/variables)
 - [TypeScript](https://github.com/localvoid/jstyle/tree/master/examples/typescript)
+- [Minification](https://github.com/localvoid/jstyle/tree/master/examples/minification)
