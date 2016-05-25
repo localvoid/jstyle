@@ -46,6 +46,7 @@ module.exports = {
   env: () => {
     const env = new Map();
     env.set("button-margin", 10);
+    return env;
   },
   minifyClassNames: true,
 };
