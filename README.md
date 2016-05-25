@@ -20,6 +20,7 @@ Create file `jstyle.conf.js`:
 
 ```js
 const jstyle = require("jstyle");
+const select = jstyle.select;
 
 const Base = new jstyle.Module()
   .rules((c, p) => [
@@ -28,13 +29,13 @@ const Base = new jstyle.Module()
     ]),
   ]);
 
-export const Main = new jstyle.Module()
+const Main = new jstyle.Module()
   .require(Base),
   .init((c) => {
     c.placeholders("buttons").add(c.className("MyButton"));
   })
   .rules((c, p) => [
-    jstyle.select(c.className("Main"), [
+    select(c.className("Main"), [
       p.top("20px")
     ]),
   ]);
@@ -65,3 +66,65 @@ $ jstyle -c jstyle.conf.js -o build
 - [Variables](https://github.com/localvoid/jstyle/tree/master/examples/variables)
 - [TypeScript](https://github.com/localvoid/jstyle/tree/master/examples/typescript)
 - [Minification](https://github.com/localvoid/jstyle/tree/master/examples/minification)
+
+## API
+
+### Context
+
+#### Get Variable
+
+`context.get<T>(name: string | Symbol, defaultValue?: T): <T>`
+
+Returns variable initialized in config environment, or default value if environment doesn't contain it.
+
+#### Get Tag Name
+
+`context.tagName(name: string | Symbol): string`
+
+If tag name minification is enabled, it will return minified tag name, otherwise it will return the same value.
+
+#### Get Class Name
+
+`context.className(name: string | Symbol): string`
+
+If class name minification is enabled, it will return minified class name, otherwise it will return the same value.
+
+#### Get placeholder
+
+`context.placeholder(name: string | Symbol): Placeholder`
+
+Returns a placeholder associated with the name parameter.
+
+### Module
+
+#### Add Depencencies
+
+`require(modules: Module | Module[]): Module`
+
+Add module dependencies.
+
+#### Init
+
+`init(handler: (context: Context, prop: PropertyFactory) => void)`
+
+Assign an init handler.
+
+#### Rules
+
+`rules(handler: (context: Context, prop: PropertyFactory) => Rule[])`
+
+Assign a function that should return rules for the module.
+
+### Config
+
+```
+interface ConfigModule {
+  entries: {[fileName: string]: Module};
+  env?: Map<string | Symbol, any> | ((defs: {[key: string]: string}) => Map<string | Symbol, any>);
+  minifyClassNames?: boolean | string;
+  minifyTagNames?: boolean | string;
+  tagNamePrefix?: string;
+}
+
+type Config = ConfigModule | ((defs: {[key: string]: string}) => ConfigModule);
+```
