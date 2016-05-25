@@ -246,7 +246,7 @@ export class Context {
 
         do {
           let id = this._nextClassNameId++;
-          result = dotPrefix ? "." : "";
+          result = "";
           while (id > alphabetLength) {
             result += ClassNameAlphabet[id % alphabetLength];
             id = id / alphabetLength | 0;
@@ -256,7 +256,7 @@ export class Context {
 
         this.classNameRegistry[className] = result;
         this._classNameReverseIndex[result] = className;
-        return result;
+        return dotPrefix ? "." + result : result;
       }
     }
 
