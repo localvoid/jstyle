@@ -37,6 +37,8 @@ export class PropertyFactory {
   getSizeValue(value: Size): string {
     if (typeof value === "string") {
       return value;
+    } else if (value === 0) {
+      return value.toString();
     }
     return value.toString() + this.defaultSizeUnit;
   }
