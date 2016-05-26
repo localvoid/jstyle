@@ -28,8 +28,12 @@ export class Module {
     return this;
   }
 
-  require(dependencies: Module[]): Module {
-    this.dependencies = this.dependencies.concat(dependencies);
+  require(dependencies: Module | Module[]): Module {
+    if (Array.isArray(dependencies)) {
+      this.dependencies = this.dependencies.concat(dependencies);
+    } else {
+      this.dependencies.push(dependencies);
+    }
     return this;
   }
 
