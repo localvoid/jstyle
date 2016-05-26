@@ -21,6 +21,7 @@ Create file `jstyle.conf.js`:
 ```js
 const jstyle = require("jstyle");
 const select = jstyle.select;
+const chunk = jstyle.chunk;
 
 const Base = new jstyle.Module()
   .rules((c, p) => [
@@ -41,9 +42,9 @@ const Main = new jstyle.Module()
   ]);
 
 module.exports = {
-  entries: {
-    "main.css": Main,
-  },
+  chunks: [
+    chunk("main.css", Main),
+  ],
   env: () => {
     const env = new Map();
     env.set("button-margin", 10);
@@ -66,6 +67,7 @@ $ jstyle -c jstyle.conf.js -o build
 - [Variables](https://github.com/localvoid/jstyle/tree/master/examples/variables)
 - [TypeScript](https://github.com/localvoid/jstyle/tree/master/examples/typescript)
 - [Minification](https://github.com/localvoid/jstyle/tree/master/examples/minification)
+- [Module splitting](https://github.com/localvoid/jstyle/tree/master/examples/multiple_chunks)
 
 ## API
 
@@ -89,7 +91,7 @@ If tag name minification is enabled, it will return minified tag name, otherwise
 
 If class name minification is enabled, it will return minified class name, otherwise it will return the same value.
 
-#### Get placeholder
+#### Get Placeholder
 
 `context.placeholder(name: string | Symbol): Placeholder`
 
@@ -117,13 +119,14 @@ Assign a function that should return rules for the module.
 
 ### Config
 
-```
+```ts
 interface ConfigModule {
-  entries: {[fileName: string]: Module};
-  env?: Map<string | Symbol, any> | ((defs: {[key: string]: string}) => Map<string | Symbol, any>);
-  minifyClassNames?: boolean | string;
-  minifyTagNames?: boolean | string;
-  tagNamePrefix?: string;
+  chunks: {fileName: string, modules: Module | Module[]}[];
+  baseChunkFileName?: string = "base.css";
+  env?: Map<string | Symbol, any> | ((defs: {[key: string]: string}) => Map<string | Symbol, any>) = {};
+  minifyClassNames?: boolean | string = false;
+  minifyTagNames?: boolean | string = false;
+  tagNamePrefix?: string = "x";
 }
 
 type Config = ConfigModule | ((defs: {[key: string]: string}) => ConfigModule);

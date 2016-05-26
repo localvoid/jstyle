@@ -2,16 +2,34 @@ import {Rule, RuleChildren, SelectorRule, MediaRule, KeyframesRule} from "./rule
 import {Property} from "./property";
 
 export abstract class Visitor {
+  visit(rules: Array<Rule | null>): Rule[] {
+    const newRules = [] as Rule[];
+    for (let i = 0; i < rules.length; i++) {
+      const rule = rules[i];
+      if (rule !== null) {
+        const ret = this.visitRule(rule);
+        if (ret !== null) {
+          newRules.push(ret);
+        }
+      }
+    }
+    return newRules;
+  }
+
   visitChildren(children: RuleChildren): RuleChildren {
-    const newChildren = [] as RuleChildren;
+    let newChildren = [] as RuleChildren;
     for (let i = 0; i < children.length; i++) {
       const child = children[i];
+      let ret: Rule | Property | null = null;
       if (Array.isArray(child)) {
-        newChildren.push(this.visitChildren(child));
+        newChildren = newChildren.concat(this.visitChildren(child));
       } else if (child instanceof Rule) {
-        newChildren.push(this.visitRule(child));
+        ret = this.visitRule(child);
       } else if (child instanceof Property) {
-        newChildren.push(this.visitProperty(child));
+        ret = this.visitProperty(child);
+      }
+      if (ret !== null) {
+        newChildren.push();
       }
     }
     return newChildren;

@@ -67,8 +67,8 @@ class EmitCssVisitor extends Visitor {
   }
 }
 
-export function emitCss(root: Rule): string {
+export function emitCss(rules: Rule[]): string {
   const visitor = new EmitCssVisitor();
-  visitor.visitRule(root);
+  visitor.visit(rules);
   return visitor.result;
 }

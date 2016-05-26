@@ -2,8 +2,10 @@ require("ts-node").register({
   disableWarnings: true
 });
 
+const jstyle = require("jstyle");
+
 module.exports = {
-  entries: {
-    "main.css": require("./main").default,
-  },
+  chunks: [
+    jstyle.chunk("main.css", require("./main").default),
+  ],
 };

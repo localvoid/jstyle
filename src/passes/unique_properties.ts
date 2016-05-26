@@ -17,8 +17,9 @@ class UniqueProperties extends Visitor {
     this._currentProperties = {};
     const ret = super.visitSelectorRule(rule);
     if (ret === null) {
-      return ret;
+      return null;
     }
+
     const properties = [] as Property[];
     const keys = Object.keys(this._currentProperties);
     for (let i = 0; i < keys.length; i++) {
@@ -30,17 +31,15 @@ class UniqueProperties extends Visitor {
     return new SelectorRule(ret.selector, properties);
   }
 
-  visitProperty(property: Property): Property | null {
-    if (property !== null) {
-      if (this._currentSelector !== null) {
-        this._currentProperties![property.name] = property;
-      }
+  visitProperty(property: Property): Property {
+    if (this._currentSelector !== null) {
+      this._currentProperties![property.name] = property;
     }
     return property;
   }
 }
 
-export function uniqueProperties(rule: Rule): Rule | null {
+export function uniqueProperties(rule: Array<Rule | null>): Rule[] {
   const visitor = new UniqueProperties();
-  return visitor.visitRule(rule);
+  return visitor.visit(rule);
 }

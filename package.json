@@ -1,6 +1,6 @@
 {
   "name": "jstyle",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "dist/js/jstyle.js",
   "typings": "dist/typings/jstyle.d.ts",
   "description": "Javascript to css compiler",

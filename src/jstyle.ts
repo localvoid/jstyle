@@ -4,14 +4,14 @@ export {Context} from "./context";
 export {Module} from "./module";
 export {Visitor} from "./visitor";
 export {emitCss} from "./emit_css";
-export {bundle} from "./bundle";
-export {flattenProperties} from "./passes/flatten_properties";
+export {Chunk, BundledChunk, bundle} from "./bundle";
 export {uniqueProperties} from "./passes/unique_properties";
-export {cleanTree} from "./passes/clean_tree";
-export {sortProperties} from "./passes/sort_properties";
+export {CompiledChunk, CompilationArtifact, compile, DefaultCompilationPasses} from "./compiler";
 
 import {RuleChildren, SelectorRule, MediaRule, KeyframesRule} from "./rule";
 import {Placeholder} from "./placeholder";
+import {Module} from "./module";
+import {Chunk} from "./bundle";
 
 export function select(selectors: string | string[] | Placeholder, children: RuleChildren): SelectorRule {
   if (Array.isArray(selectors) || selectors instanceof Placeholder) {
@@ -26,4 +26,8 @@ export function media(expressions: string, children: RuleChildren): MediaRule {
 
 export function keyframes(id: string, children: RuleChildren): KeyframesRule {
   return new KeyframesRule(id, children);
+}
+
+export function chunk(fileName: string, modules: Module | Module[]): Chunk {
+  return new Chunk(fileName, modules);
 }

@@ -22,7 +22,7 @@ const main = new jstyle.Module()
   ]);
 
 module.exports = {
-  entries: {
-    "main.css": main,
-  },
+  chunks: [
+    jstyle.chunk("main.css", main),
+  ],
 };
