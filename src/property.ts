@@ -159,8 +159,8 @@ export class PropertyFactory {
     return new Property("border-width", this.getSizeValue(value));
   }
 
-  bottom(value: string): Property {
-    return new Property("bottom", value);
+  bottom(value: Size): Property {
+    return new Property("bottom", this.getSizeValue(value));
   }
 
   captionSide(value: string): Property {
