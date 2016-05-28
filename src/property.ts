@@ -1,4 +1,5 @@
 import {Color} from "./color";
+import {Size} from "./size";
 
 /**
  * CSS Property
@@ -17,7 +18,6 @@ export interface PropertyFactoryOptions {
   defaultSizeUnit?: string;
 }
 
-export type Size = number | string;
 export type Display = "none" | "inline" | "block" | "inline-block" | "contents" | "list-item" | "inline-list-item" |
   "table" | "inline-table" | "table-cell" | "table-column" | "table-column-group" | "table-footer-group" |
   "table-header-group" | "table-row" | "table-row-group" | "table-caption" | "flex" | "inline-flex" | "grid" |
@@ -35,13 +35,16 @@ export class PropertyFactory {
     return new Property(name, value);
   }
 
-  getSizeValue(value: Size): string {
+  getSizeValue(value: Size | string | number): string {
     if (typeof value === "string") {
       return value;
-    } else if (value === 0) {
-      return value.toString();
+    } else if (typeof value === "number") {
+      if (value === 0) {
+        return value.toString();
+      }
+      return value.toString() + this.defaultSizeUnit;
     }
-    return value.toString() + this.defaultSizeUnit;
+    return value.toString();
   }
 
   getColorValue(value: Color | string): string {
@@ -94,7 +97,7 @@ export class PropertyFactory {
     return new Property("border-color", this.getColorValue(value));
   }
 
-  borderSpacing(value: Size): Property {
+  borderSpacing(value: Size | string | number): Property {
     return new Property("border-spacing", this.getSizeValue(value));
   }
 
@@ -150,27 +153,27 @@ export class PropertyFactory {
     return new Property("border-left-style", value);
   }
 
-  borderTopWidth(value: Size): Property {
+  borderTopWidth(value: Size | string | number): Property {
     return new Property("border-top-width", this.getSizeValue(value));
   }
 
-  borderRightWidth(value: Size): Property {
+  borderRightWidth(value: Size | string | number): Property {
     return new Property("border-right-width", this.getSizeValue(value));
   }
 
-  borderBottomWidth(value: Size): Property {
+  borderBottomWidth(value: Size | string | number): Property {
     return new Property("border-bottom-width", this.getSizeValue(value));
   }
 
-  borderLeftWidth(value: Size): Property {
+  borderLeftWidth(value: Size | string | number): Property {
     return new Property("border-left-width", this.getSizeValue(value));
   }
 
-  borderWidth(value: Size): Property {
+  borderWidth(value: Size | string | number): Property {
     return new Property("border-width", this.getSizeValue(value));
   }
 
-  bottom(value: Size): Property {
+  bottom(value: Size | string | number): Property {
     return new Property("bottom", this.getSizeValue(value));
   }
 
@@ -246,7 +249,7 @@ export class PropertyFactory {
     return new Property("font-family", value);
   }
 
-  fontSize(value: Size): Property {
+  fontSize(value: Size | string | number): Property {
     return new Property("font-size", this.getSizeValue(value));
   }
 
@@ -271,11 +274,11 @@ export class PropertyFactory {
     return new Property("font-weight", value);
   }
 
-  height(value: Size): Property {
+  height(value: Size | string | number): Property {
     return new Property("height", this.getSizeValue(value));
   }
 
-  left(value: Size): Property {
+  left(value: Size | string | number): Property {
     return new Property("left", this.getSizeValue(value));
   }
 
@@ -283,7 +286,7 @@ export class PropertyFactory {
     return new Property("letter-spacing", value);
   }
 
-  lineHeight(value: Size): Property {
+  lineHeight(value: Size | string | number): Property {
     return new Property("line-height", this.getSizeValue(value));
   }
 
@@ -303,23 +306,23 @@ export class PropertyFactory {
     return new Property("list-style-type", value);
   }
 
-  margin(value: Size): Property {
+  margin(value: Size | string | number): Property {
     return new Property("margin", this.getSizeValue(value));
   }
 
-  marginTop(value: Size): Property {
+  marginTop(value: Size | string | number): Property {
     return new Property("margin-top", this.getSizeValue(value));
   }
 
-  marginRight(value: Size): Property {
+  marginRight(value: Size | string | number): Property {
     return new Property("margin-right", this.getSizeValue(value));
   }
 
-  marginBottom(value: Size): Property {
+  marginBottom(value: Size | string | number): Property {
     return new Property("margin-bottom", this.getSizeValue(value));
   }
 
-  marginLeft(value: Size): Property {
+  marginLeft(value: Size | string | number): Property {
     return new Property("margin-left", this.getSizeValue(value));
   }
 
@@ -331,19 +334,19 @@ export class PropertyFactory {
     return new Property("marks", value);
   }
 
-  maxHeight(value: Size): Property {
+  maxHeight(value: Size | string | number): Property {
     return new Property("max-height", this.getSizeValue(value));
   }
 
-  maxWidth(value: Size): Property {
+  maxWidth(value: Size | string | number): Property {
     return new Property("max-width", this.getSizeValue(value));
   }
 
-  minHeight(value: Size): Property {
+  minHeight(value: Size | string | number): Property {
     return new Property("min-height", this.getSizeValue(value));
   }
 
-  minWidth(value: Size): Property {
+  minWidth(value: Size | string | number): Property {
     return new Property("min-width", this.getSizeValue(value));
   }
 
@@ -363,7 +366,7 @@ export class PropertyFactory {
     return new Property("outline-style", value);
   }
 
-  outlineWidth(value: Size): Property {
+  outlineWidth(value: Size | string | number): Property {
     return new Property("outline-width", this.getSizeValue(value));
   }
 
@@ -371,23 +374,23 @@ export class PropertyFactory {
     return new Property("overflow", value);
   }
 
-  padding(value: Size): Property {
+  padding(value: Size | string | number): Property {
     return new Property("padding", this.getSizeValue(value));
   }
 
-  paddingTop(value: Size): Property {
+  paddingTop(value: Size | string | number): Property {
     return new Property("padding-top", this.getSizeValue(value));
   }
 
-  paddingRight(value: Size): Property {
+  paddingRight(value: Size | string | number): Property {
     return new Property("padding-right", this.getSizeValue(value));
   }
 
-  paddingBottom(value: Size): Property {
+  paddingBottom(value: Size | string | number): Property {
     return new Property("padding-bottom", this.getSizeValue(value));
   }
 
-  paddingLeft(value: Size): Property {
+  paddingLeft(value: Size | string | number): Property {
     return new Property("padding-left", this.getSizeValue(value));
   }
 
@@ -447,7 +450,7 @@ export class PropertyFactory {
     return new Property("richness", value);
   }
 
-  right(value: Size): Property {
+  right(value: Size | string | number): Property {
     return new Property("right", this.getSizeValue(value));
   }
 
@@ -503,7 +506,7 @@ export class PropertyFactory {
     return new Property("text-transform", value);
   }
 
-  top(value: Size): Property {
+  top(value: Size | string | number): Property {
     return new Property("top", this.getSizeValue(value));
   }
 
@@ -535,7 +538,7 @@ export class PropertyFactory {
     return new Property("widows", value);
   }
 
-  width(value: Size): Property {
+  width(value: Size | string | number): Property {
     return new Property("width", this.getSizeValue(value));
   }
 

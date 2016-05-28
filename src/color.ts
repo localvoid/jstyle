@@ -9,7 +9,6 @@ export {RgbColor, HsvColor, HslColor, HwbColor} from "inkdrop";
 
 export type ContrastLevel = "" | "AA" | "AAA";
 
-
 export class Color {
   private readonly _rgb: RgbColor;
 
