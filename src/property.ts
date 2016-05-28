@@ -1,3 +1,5 @@
+import {Color} from "./color";
+
 /**
  * CSS Property
  */
@@ -15,7 +17,6 @@ export interface PropertyFactoryOptions {
   defaultSizeUnit?: string;
 }
 
-export type Color = string;
 export type Size = number | string;
 export type Display = "none" | "inline" | "block" | "inline-block" | "contents" | "list-item" | "inline-list-item" |
   "table" | "inline-table" | "table-cell" | "table-column" | "table-column-group" | "table-footer-group" |
@@ -43,6 +44,16 @@ export class PropertyFactory {
     return value.toString() + this.defaultSizeUnit;
   }
 
+  getColorValue(value: Color | string): string {
+    if (typeof value === "string") {
+      return value;
+    }
+    if (value.isOpaque) {
+      return value.toHexString();
+    }
+    return value.toRgbString();
+  }
+
   azimuth(value: string): Property {
     return new Property("azimuth", value);
   }
@@ -55,8 +66,8 @@ export class PropertyFactory {
     return new Property("background-attachment", value);
   }
 
-  backgroundColor(value: Color): Property {
-    return new Property("background-color", value);
+  backgroundColor(value: Color | string): Property {
+    return new Property("background-color", this.getColorValue(value));
   }
 
   backgroundImage(value: string): Property {
@@ -79,8 +90,8 @@ export class PropertyFactory {
     return new Property("border-collapse", value);
   }
 
-  borderColor(value: Color): Property {
-    return new Property("border-color", value);
+  borderColor(value: Color | string): Property {
+    return new Property("border-color", this.getColorValue(value));
   }
 
   borderSpacing(value: Size): Property {
@@ -107,20 +118,20 @@ export class PropertyFactory {
     return new Property("border-left", value);
   }
 
-  borderTopColor(value: Color): Property {
-    return new Property("border-top-color", value);
+  borderTopColor(value: Color | string): Property {
+    return new Property("border-top-color", this.getColorValue(value));
   }
 
-  borderRightColor(value: Color): Property {
-    return new Property("border-right-color", value);
+  borderRightColor(value: Color | string): Property {
+    return new Property("border-right-color", this.getColorValue(value));
   }
 
-  borderBottomColor(value: Color): Property {
-    return new Property("border-bottom-color", value);
+  borderBottomColor(value: Color | string): Property {
+    return new Property("border-bottom-color", this.getColorValue(value));
   }
 
-  borderLeftColor(value: Color): Property {
-    return new Property("border-left-color", value);
+  borderLeftColor(value: Color | string): Property {
+    return new Property("border-left-color", this.getColorValue(value));
   }
 
   borderTopStyle(value: string): Property {
@@ -175,8 +186,8 @@ export class PropertyFactory {
     return new Property("clip", value);
   }
 
-  color(value: Color): Property {
-    return new Property("color", value);
+  color(value: Color | string): Property {
+    return new Property("color", this.getColorValue(value));
   }
 
   content(value: string): Property {
@@ -344,8 +355,8 @@ export class PropertyFactory {
     return new Property("outline", value);
   }
 
-  outlineColor(value: Color): Property {
-    return new Property("outline-color", value);
+  outlineColor(value: Color | string): Property {
+    return new Property("outline-color", this.getColorValue(value));
   }
 
   outlineStyle(value: string): Property {

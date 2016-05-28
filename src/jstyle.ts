@@ -7,6 +7,7 @@ export {emitCss} from "./emit_css";
 export {Chunk, BundledChunk, bundle} from "./bundle";
 export {uniqueProperties} from "./passes/unique_properties";
 export {CompiledChunk, CompilationArtifact, compile, DefaultCompilationPasses} from "./compiler";
+export {ContrastLevel, Color, RgbColor, HslColor, HsvColor, HwbColor} from "./color";
 
 import {RuleChildren, SelectorRule, MediaRule, KeyframesRule} from "./rule";
 import {Placeholder} from "./placeholder";
