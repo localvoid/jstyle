@@ -75,7 +75,7 @@ $ jstyle -c jstyle.conf.js -o build
 
 #### Get Variable
 
-`context.get<T>(name: string | Symbol, defaultValue?: T): <T>`
+`context.get<T>(name: string | Symbol, defaultValue?: T): T`
 
 Returns variable initialized in config environment, or default value if environment doesn't contain it.
 
