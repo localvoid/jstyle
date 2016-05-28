@@ -9,6 +9,7 @@ export {RgbColor, HsvColor, HslColor, HwbColor} from "inkdrop";
 
 export type ContrastLevel = "" | "AA" | "AAA";
 
+
 export class Color {
   private readonly _rgb: RgbColor;
 
@@ -17,19 +18,19 @@ export class Color {
   }
 
   static rgb(r: number, g: number, b: number, a = 1): Color {
-    return new Color(new RgbColor(r / 255, g / 255, b / 255, a));
+    return new Color(new RgbColor(clamp255(r) / 255, clamp255(g) / 255, clamp255(b) / 255, clamp1(a)));
   }
 
   static hsv(h: number, s: number, v: number, a = 1): Color {
-    return new Color(hsvToRgb(new HsvColor(h / 360, s / 100, v / 100, a)));
+    return new Color(hsvToRgb(new HsvColor(clamp360(h) / 360, clamp100(s) / 100, clamp100(v) / 100, clamp1(a))));
   }
 
   static hsl(h: number, s: number, l: number, a = 1): Color {
-    return new Color(hslToRgb(new HslColor(h / 360, s / 100, l / 100, a)));
+    return new Color(hslToRgb(new HslColor(clamp360(h) / 360, clamp100(s) / 100, clamp100(l) / 100, clamp1(a))));
   }
 
   static hwb(h: number, w: number, b: number, a = 1): Color {
-    return new Color(hwbToRgb(new HwbColor(h / 360, w / 100, b / 100, a)));
+    return new Color(hwbToRgb(new HwbColor(clamp360(h) / 360, clamp100(w) / 100, clamp100(b) / 100, clamp1(a))));
   }
 
   static hex(color: string): Color {
@@ -214,4 +215,44 @@ export class Color {
   monochromatic(results = 6): Color[] {
     return monochromatic(rgbToHsv(this._rgb), results).map((c) => new Color(hsvToRgb(c)));
   }
+}
+
+function clamp1(v: number): number {
+  if (v < 0) {
+    return 0;
+  }
+  if (v > 1) {
+    return 1;
+  }
+  return v;
+}
+
+function clamp100(v: number): number {
+  if (v < 0) {
+    return 0;
+  }
+  if (v > 1) {
+    return 1;
+  }
+  return v;
+}
+
+function clamp255(v: number): number {
+  if (v < 0) {
+    return 0;
+  }
+  if (v > 255) {
+    return 255;
+  }
+  return v;
+}
+
+function clamp360(v: number): number {
+  if (v < 0) {
+    return 0;
+  }
+  if (v > 1) {
+    return 1;
+  }
+  return v;
 }
