@@ -3,7 +3,7 @@ import {RgbColor, HsvColor, HslColor, HwbColor, hsvToRgb, hslToRgb, hwbToRgb, he
   relSaturate, absLighten, relLighten, absDarken, relDarken, absFadeIn, relFadeIn, absFadeOut, relFadeOut, absWhiten,
   relWhiten, absBlacken, relBlacken, spin, mix, tint, shade, negate, greyscale, formatRgbToHex, formatRgbToString,
   formatHslToString, formatHsvToString, complement, triad, tetrad, splitComplement, analogous,
-  monochromatic} from "inkdrop";
+  monochromatic, rgbLinearize, rgbDelinearize} from "inkdrop";
 
 export {RgbColor, HsvColor, HslColor, HwbColor} from "inkdrop";
 
@@ -88,11 +88,11 @@ export class Color {
   }
 
   isTransparent(): boolean {
-    return this._rgb.a === 0;
+    return this._rgb.alpha === 0;
   }
 
   isOpaque(): boolean {
-    return this._rgb.a === 1;
+    return this._rgb.alpha === 1;
   }
 
   saturate(amount = 0.1, relative = false): Color {
@@ -156,15 +156,15 @@ export class Color {
   }
 
   mix(other: Color, ratio = 0.5): Color {
-    return new Color(mix(this._rgb, other._rgb, ratio));
+    return new Color(rgbDelinearize(mix(rgbLinearize(this._rgb), rgbLinearize(other._rgb), ratio)));
   }
 
   tint(ratio = 0.5): Color {
-    return new Color(tint(this._rgb, ratio));
+    return new Color(rgbDelinearize(tint(rgbLinearize(this._rgb), ratio)));
   }
 
   shade(ratio = 0.5): Color {
-    return new Color(shade(this._rgb, ratio));
+    return new Color(rgbDelinearize(shade(rgbLinearize(this._rgb), ratio)));
   }
 
   negate(): Color {
