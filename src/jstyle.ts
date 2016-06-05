@@ -9,6 +9,7 @@ export {uniqueProperties} from "./passes/unique_properties";
 export {CompiledChunk, CompilationArtifact, compile, DefaultCompilationPasses} from "./compiler";
 export {ContrastLevel, Color, RgbColor, HslColor, HsvColor, HwbColor} from "./color";
 export {Size, SizeUnit} from "./size";
+export {fontFamily} from "./font";
 
 import {RuleChildren, SelectorRule, MediaRule, KeyframesRule} from "./rule";
 import {Placeholder} from "./placeholder";
