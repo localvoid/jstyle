@@ -354,8 +354,8 @@ export class PropertyFactory {
     return new Property("orphans", value);
   }
 
-  outline(value: string): Property {
-    return new Property("outline", value);
+  outline(value: Size | string | number): Property {
+    return new Property("outline", this.getSizeValue(value));
   }
 
   outlineColor(value: Color | string): Property {
