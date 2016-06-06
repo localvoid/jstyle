@@ -191,6 +191,10 @@ export class Color {
     return formatHsvToString(rgbToHsv(this._rgb));
   }
 
+  toString(): string {
+    return this.toHexString();
+  }
+
   complement(): Color {
     return new Color(hslToRgb(complement(rgbToHsl(this._rgb))));
   }
