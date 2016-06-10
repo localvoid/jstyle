@@ -61,8 +61,8 @@ export class PropertyFactory {
     return new Property("azimuth", value);
   }
 
-  background(value: string): Property {
-    return new Property("background", value);
+  background(value: Color | string): Property {
+    return new Property("background", this.getColorValue(value));
   }
 
   backgroundAttachment(value: string): Property {
