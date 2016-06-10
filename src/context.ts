@@ -173,21 +173,13 @@ export interface ContextOptions {
   env?: Map<string | Symbol, any>;
 }
 
-const SymbolDescriptionRegexp = /^Symbol\((.*)\)$/;
-
-function getSymbolDescription(symbol: Symbol): string {
-  return symbol.toString().match(SymbolDescriptionRegexp)![1];
-}
-
 export class Context {
   private readonly _minifyTagNames: boolean;
   private readonly _minifyClassNames: boolean;
-  private readonly _symbolNameRegistry: Map<Symbol, string>;
-  private _nextSymbolNameId: number;
   public readonly tagNameRegistry: {[name: string]: string};
   public readonly classNameRegistry: {[name: string]: string};
-  private readonly _tagNameReverseIndex: Map<string | Symbol, any>;
-  private readonly _classNameReverseIndex: Map<string | Symbol, any>;
+  private readonly _tagNameReverseIndex: Map<string, string>;
+  private readonly _classNameReverseIndex: Map<string, string>;
   private readonly _tagNamePrefix: string;
   private _nextTagNameId: number;
   private _nextClassNameId: number;
@@ -201,12 +193,10 @@ export class Context {
 
     this._minifyTagNames = minifyTagNames;
     this._minifyClassNames = minifyClassNames;
-    this._symbolNameRegistry = new Map<Symbol, string>();
-    this._nextSymbolNameId = 0;
     this.tagNameRegistry = {};
     this.classNameRegistry = {};
-    this._tagNameReverseIndex = new Map<string | Symbol, any>();
-    this._classNameReverseIndex = new Map<string | Symbol, any>();
+    this._tagNameReverseIndex = new Map<string, string>();
+    this._classNameReverseIndex = new Map<string, string>();
     this._tagNamePrefix = tagNamePrefix;
     this._nextTagNameId = 0;
     this._nextClassNameId = 0;
@@ -214,31 +204,15 @@ export class Context {
     this._env = options && options.env || new Map<string | Symbol, any>();
   }
 
-  symbolName(symbol: Symbol): string {
-    let name = this._symbolNameRegistry.get(symbol);
-    if (name === undefined) {
-      name = getSymbolDescription(symbol);
-      if (name.length === 0) {
-        name = "unnamed";
-      }
-      name += "_" + this._nextSymbolNameId.toString();
-      this._symbolNameRegistry.set(symbol, name);
-      this._nextSymbolNameId++;
-    }
-
-    return name;
-  }
-
-  tagName(tagName: string | Symbol): string {
-    const name = (typeof tagName === "string") ? tagName : this.symbolName(tagName);
+  tagName(tagName: string): string {
+    tagName = tagName.toLowerCase();
 
     if (this._minifyTagNames) {
-      let lowCaseTagName = name.toLowerCase();
-      if (ReservedTagNames.has(lowCaseTagName)) {
-        return name;
+      if (ReservedTagNames.has(tagName)) {
+        return tagName;
       }
 
-      let result = this.tagNameRegistry[lowCaseTagName];
+      let result = this.tagNameRegistry[tagName];
       if (result !== undefined) {
         return result;
       } else {
@@ -254,20 +228,18 @@ export class Context {
           result += TagNameAlphabet[id % alphabetLength];
         } while (this._tagNameReverseIndex.has(result) || ReservedTagNames.has(result));
 
-        this.tagNameRegistry[lowCaseTagName] = result;
-        this._tagNameReverseIndex.set(result, lowCaseTagName);
+        this.tagNameRegistry[tagName] = result;
+        this._tagNameReverseIndex.set(result, tagName);
         return result;
       }
     }
 
-    return name;
+    return tagName;
   }
 
-  className(className: string | Symbol, dotPrefix = true): string {
-    const name = (typeof className === "string") ? className : this.symbolName(className);
-
+  className(className: string, dotPrefix = true): string {
     if (this._minifyClassNames) {
-      let result = this.classNameRegistry[name];
+      let result = this.classNameRegistry[className];
       if (result !== undefined) {
         return dotPrefix ? "." + result : result;
       } else {
@@ -283,13 +255,13 @@ export class Context {
           result += ClassNameAlphabet[id % alphabetLength];
         } while (this._classNameReverseIndex.has(result) || ReservedClassNames.has(result));
 
-        this.classNameRegistry[name] = result;
-        this._classNameReverseIndex.set(result, name);
+        this.classNameRegistry[className] = result;
+        this._classNameReverseIndex.set(result, className);
         return dotPrefix ? "." + result : result;
       }
     }
 
-    return dotPrefix ? "." + name : name;
+    return dotPrefix ? "." + className : className;
   }
 
   placeholder(name: string | Symbol): Placeholder {
