@@ -570,8 +570,8 @@ export class PropertyFactory {
     return new Property("transform", value);
   }
 
-  opacity(value: string): Property {
-    return new Property("opacity", value);
+  opacity(value: number): Property {
+    return new Property("opacity", value.toString());
   }
 
   boxSizing(value: "content-box" | "border-box"): Property {
