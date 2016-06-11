@@ -574,7 +574,7 @@ export class PropertyFactory {
     return new Property("opacity", value);
   }
 
-  boxSizing(value: string): Property {
+  boxSizing(value: "content-box" | "border-box"): Property {
     return new Property("box-sizing", value);
   }
 
