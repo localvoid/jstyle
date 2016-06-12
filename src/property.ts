@@ -370,8 +370,16 @@ export class PropertyFactory {
     return new Property("outline-width", this.getSizeValue(value));
   }
 
-  overflow(value: "visible" | "hidden" | "scroll" | "auto" | "inherit" | "initial" | "unset"): Property {
+  overflow(value: "visible" | "hidden" | "scroll" | "auto"): Property {
     return new Property("overflow", value);
+  }
+
+  overflowX(value: "visible" | "hidden" | "scroll" | "auto"): Property {
+    return new Property("overflow-x", value);
+  }
+
+  overflowY(value: "visible" | "hidden" | "scroll" | "auto"): Property {
+    return new Property("overflow-y", value);
   }
 
   padding(value: Size | string | number): Property {
