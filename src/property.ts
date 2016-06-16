@@ -645,6 +645,10 @@ export class PropertyFactory {
   columns(value: string): Property {
     return new Property("columns", value);
   }
+
+  backgroundBlendMode(value: string): Property {
+    return new Property("background-blend-mode", value);
+  }
 }
 
 export const DefaultPropertyFactory = new PropertyFactory();
