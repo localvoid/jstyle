@@ -621,6 +621,10 @@ export class PropertyFactory {
   contain(value: "layout" | "style" | "paint" | "size" | "strict" | "content"): Property {
     return new Property("contain", value);
   }
+
+  fontDisplay(value: "block" | "swap" | "fallback" | "optional"): Property {
+    return new Property("font-display", value);
+  }
 }
 
 export const DefaultPropertyFactory = new PropertyFactory();
