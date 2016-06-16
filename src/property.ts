@@ -602,7 +602,8 @@ export class PropertyFactory {
     return new Property("align-items", value);
   }
 
-  touchAction(value: string): Property {
+  touchAction(value: "auto" | "none" | "pan-x" | "pan-left" | "pan-right" | "pan-y" | "pan-up" | "pan-down" |
+      "manipulation"): Property {
     return new Property("touch-action", value);
   }
 
