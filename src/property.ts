@@ -629,6 +629,22 @@ export class PropertyFactory {
   fontFeatureSettings(value: string): Property {
     return new Property("font-feature-settings", value);
   }
+
+  columnCount(value: number): Property {
+    return new Property("column-count", value.toString());
+  }
+
+  columnWidth(value: Size | number | string): Property {
+    return new Property("column-width", this.getSizeValue(value));
+  }
+
+  columnGap(value: Size | number | string): Property {
+    return new Property("column-gap", this.getSizeValue(value));
+  }
+
+  columns(value: string): Property {
+    return new Property("columns", value);
+  }
 }
 
 export const DefaultPropertyFactory = new PropertyFactory();
