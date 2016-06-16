@@ -649,6 +649,10 @@ export class PropertyFactory {
   backgroundBlendMode(value: string): Property {
     return new Property("background-blend-mode", value);
   }
+
+  imageRendering(value: "auto" | "crisp-edges" | "pixelated"): Property {
+    return new Property("image-rendering", value);
+  }
 }
 
 export const DefaultPropertyFactory = new PropertyFactory();
