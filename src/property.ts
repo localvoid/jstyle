@@ -617,6 +617,10 @@ export class PropertyFactory {
   willChange(value: string): Property {
     return new Property("will-change", value);
   }
+
+  contain(value: "layout" | "style" | "paint" | "size" | "strict" | "content"): Property {
+    return new Property("contain", value);
+  }
 }
 
 export const DefaultPropertyFactory = new PropertyFactory();
