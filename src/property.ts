@@ -625,6 +625,10 @@ export class PropertyFactory {
   fontDisplay(value: "block" | "swap" | "fallback" | "optional"): Property {
     return new Property("font-display", value);
   }
+
+  fontFeatureSettings(value: string): Property {
+    return new Property("font-feature-settings", value);
+  }
 }
 
 export const DefaultPropertyFactory = new PropertyFactory();
