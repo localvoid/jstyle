@@ -18,6 +18,42 @@ export interface PropertyFactoryOptions {
   defaultSizeUnit?: string;
 }
 
+export interface BackgroundProperty {
+  attachment?: string;
+  box?: string;
+  color?: Color | string;
+  image?: string;
+  position?: string;
+  repeat?: string;
+  size?: Size | number | string;
+}
+
+function backgroundPropertyToString(f: PropertyFactory, p: BackgroundProperty): string {
+  const result = [] as string[];
+  if (p.attachment !== undefined) {
+    result.push(p.attachment);
+  }
+  if (p.box !== undefined) {
+    result.push(p.box);
+  }
+  if (p.color !== undefined) {
+    result.push(f.getColorValue(p.color));
+  }
+  if (p.image !== undefined) {
+    result.push(p.image);
+  }
+  if (p.position !== undefined) {
+    result.push(p.position);
+  }
+  if (p.repeat !== undefined) {
+    result.push(p.repeat);
+  }
+  if (p.size !== undefined) {
+    result.push(f.getSizeValue(p.size));
+  }
+  return result.join(" ");
+}
+
 export type Display = "none" | "inline" | "block" | "inline-block" | "contents" | "list-item" | "inline-list-item" |
   "table" | "inline-table" | "table-cell" | "table-column" | "table-column-group" | "table-footer-group" |
   "table-header-group" | "table-row" | "table-row-group" | "table-caption" | "flex" | "inline-flex" | "grid" |
@@ -61,8 +97,13 @@ export class PropertyFactory {
     return new Property("azimuth", value);
   }
 
-  background(value: Color | string): Property {
-    return new Property("background", this.getColorValue(value));
+  background(value: BackgroundProperty[] | BackgroundProperty | Color | string): Property {
+    if (typeof value === "string" || value instanceof Color) {
+      return new Property("background", this.getColorValue(value));
+    } else if (Array.isArray(value)) {
+      return new Property("background", value.map((v) => backgroundPropertyToString(this, v)).join(", "));
+    }
+    return new Property("background", backgroundPropertyToString(this, value));
   }
 
   backgroundAttachment(value: string): Property {
