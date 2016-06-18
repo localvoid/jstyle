@@ -28,6 +28,12 @@ export interface BackgroundProperty {
   size?: Size | number | string;
 }
 
+export interface BorderProperty {
+  width?: Size | number | string;
+  style?: "none" | "hidden" | "dotted" | "dashed" | "solid" | "double" | "groove" | "ridge" | "inset" | "outset";
+  color?: Color | string;
+}
+
 function backgroundPropertyToString(f: PropertyFactory, p: BackgroundProperty): string {
   const result = [] as string[];
   if (p.attachment !== undefined) {
@@ -51,6 +57,21 @@ function backgroundPropertyToString(f: PropertyFactory, p: BackgroundProperty): 
   if (p.size !== undefined) {
     result.push(f.getSizeValue(p.size));
   }
+  return result.join(" ");
+}
+
+function borderPropertyToString(f: PropertyFactory, p: BorderProperty): string {
+  const result = [] as string [];
+  if (p.width !== undefined) {
+    result.push(f.getSizeValue(p.width));
+  }
+  if (p.style !== undefined) {
+    result.push(p.style);
+  }
+  if (p.color !== undefined) {
+    result.push(f.getColorValue(p.color));
+  }
+
   return result.join(" ");
 }
 
@@ -126,8 +147,11 @@ export class PropertyFactory {
     return new Property("background-repeat", value);
   }
 
-  border(value: string): Property {
-    return new Property("border", value);
+  border(value: BorderProperty | string): Property {
+    if (typeof value === "string") {
+      return new Property("border", value);
+    }
+    return new Property("border", borderPropertyToString(this, value));
   }
 
   borderCollapse(value: "separate" | "collapse" | "initial" | "inherit"): Property {
