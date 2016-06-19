@@ -18,6 +18,13 @@ export interface PropertyFactoryOptions {
   defaultSizeUnit?: string;
 }
 
+export type SizeProperty = Size | number | string;
+
+export type ColorProperty = Color | string;
+
+export type RectSizeProperty = [SizeProperty, SizeProperty] | [SizeProperty, SizeProperty, SizeProperty, SizeProperty] |
+  SizeProperty;
+
 export interface BackgroundProperty {
   attachment?: string;
   box?: string;
@@ -32,6 +39,13 @@ export interface BorderProperty {
   width?: Size | number | string;
   style?: "none" | "hidden" | "dotted" | "dashed" | "solid" | "double" | "groove" | "ridge" | "inset" | "outset";
   color?: Color | string;
+}
+
+function rectSizePropertyToString(f: PropertyFactory, p: RectSizeProperty): string {
+  if (Array.isArray(p)) {
+    return p.map((v) => f.getSizeValue(v)).join(" ");
+  }
+  return f.getSizeValue(p);
 }
 
 function backgroundPropertyToString(f: PropertyFactory, p: BackgroundProperty): string {
@@ -234,8 +248,8 @@ export class PropertyFactory {
     return new Property("border-left-width", this.getSizeValue(value));
   }
 
-  borderWidth(value: Size | string | number): Property {
-    return new Property("border-width", this.getSizeValue(value));
+  borderWidth(value: RectSizeProperty): Property {
+    return new Property("border-width", rectSizePropertyToString(this, value));
   }
 
   bottom(value: Size | string | number): Property {
@@ -371,8 +385,8 @@ export class PropertyFactory {
     return new Property("list-style-type", value);
   }
 
-  margin(value: Size | string | number): Property {
-    return new Property("margin", this.getSizeValue(value));
+  margin(value: RectSizeProperty): Property {
+    return new Property("margin", rectSizePropertyToString(this, value));
   }
 
   marginTop(value: Size | string | number): Property {
@@ -431,8 +445,8 @@ export class PropertyFactory {
     return new Property("outline-style", value);
   }
 
-  outlineWidth(value: Size | string | number): Property {
-    return new Property("outline-width", this.getSizeValue(value));
+  outlineWidth(value: RectSizeProperty): Property {
+    return new Property("outline-width", rectSizePropertyToString(this, value));
   }
 
   overflow(value: "visible" | "hidden" | "scroll" | "auto"): Property {
@@ -447,8 +461,8 @@ export class PropertyFactory {
     return new Property("overflow-y", value);
   }
 
-  padding(value: Size | string | number): Property {
-    return new Property("padding", this.getSizeValue(value));
+  padding(value: RectSizeProperty): Property {
+    return new Property("padding", rectSizePropertyToString(this, value));
   }
 
   paddingTop(value: Size | string | number): Property {
