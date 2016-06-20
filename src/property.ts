@@ -45,6 +45,10 @@ export type BackgroundProperty = BackgroundDetails | BackgroundDetails[] | Color
 
 export type BorderProperty = BorderDetails | string;
 
+export type BlendMode = "normal" | "multiply" | "screen" | "overlay" | "darken" | "lighten" | "color-dodge" |
+  "color-burn" | "hard-light" | "soft-light" | "difference" | "exclusion" | "hue" | "saturation" | "color" |
+  "luminosity";
+
 function rectSizePropertyToString(f: PropertyFactory, p: RectSizeProperty): string {
   if (Array.isArray(p)) {
     return p.map((v) => f.getSizeValue(v)).join(" ");
@@ -734,7 +738,10 @@ export class PropertyFactory {
     return new Property("columns", value);
   }
 
-  backgroundBlendMode(value: string): Property {
+  backgroundBlendMode(value: BlendMode[] | BlendMode): Property {
+    if (Array.isArray(value)) {
+      return new Property("background-blend-mode", value.join(", "));
+    }
     return new Property("background-blend-mode", value);
   }
 
