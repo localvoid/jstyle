@@ -25,7 +25,7 @@ export type ColorProperty = Color | string;
 export type RectSizeProperty = [SizeProperty, SizeProperty] | [SizeProperty, SizeProperty, SizeProperty, SizeProperty] |
   SizeProperty;
 
-export interface BackgroundProperty {
+export interface BackgroundDetails {
   attachment?: string;
   box?: string;
   color?: Color | string;
@@ -35,11 +35,15 @@ export interface BackgroundProperty {
   size?: Size | number | string;
 }
 
-export interface BorderProperty {
+export interface BorderDetails {
   width?: Size | number | string;
   style?: "none" | "hidden" | "dotted" | "dashed" | "solid" | "double" | "groove" | "ridge" | "inset" | "outset";
   color?: Color | string;
 }
+
+export type BackgroundProperty = BackgroundDetails | BackgroundDetails[] | Color | string;
+
+export type BorderProperty = BorderDetails | string;
 
 function rectSizePropertyToString(f: PropertyFactory, p: RectSizeProperty): string {
   if (Array.isArray(p)) {
@@ -48,7 +52,7 @@ function rectSizePropertyToString(f: PropertyFactory, p: RectSizeProperty): stri
   return f.getSizeValue(p);
 }
 
-function backgroundPropertyToString(f: PropertyFactory, p: BackgroundProperty): string {
+function backgroundDetailsToString(f: PropertyFactory, p: BackgroundDetails): string {
   const result = [] as string[];
   if (p.attachment !== undefined) {
     result.push(p.attachment);
@@ -74,7 +78,7 @@ function backgroundPropertyToString(f: PropertyFactory, p: BackgroundProperty): 
   return result.join(" ");
 }
 
-function borderPropertyToString(f: PropertyFactory, p: BorderProperty): string {
+function borderDetailsToString(f: PropertyFactory, p: BorderDetails): string {
   const result = [] as string [];
   if (p.width !== undefined) {
     result.push(f.getSizeValue(p.width));
@@ -87,6 +91,13 @@ function borderPropertyToString(f: PropertyFactory, p: BorderProperty): string {
   }
 
   return result.join(" ");
+}
+
+function borderPropertyToString(f: PropertyFactory, p: BorderProperty): string {
+  if (typeof p === "string") {
+    return p;
+  }
+  return borderDetailsToString(f, p);
 }
 
 export type Display = "none" | "inline" | "block" | "inline-block" | "contents" | "list-item" | "inline-list-item" |
@@ -132,13 +143,13 @@ export class PropertyFactory {
     return new Property("azimuth", value);
   }
 
-  background(value: BackgroundProperty[] | BackgroundProperty | Color | string): Property {
+  background(value: BackgroundDetails[] | BackgroundDetails | Color | string): Property {
     if (typeof value === "string" || value instanceof Color) {
       return new Property("background", this.getColorValue(value));
     } else if (Array.isArray(value)) {
-      return new Property("background", value.map((v) => backgroundPropertyToString(this, v)).join(", "));
+      return new Property("background", value.map((v) => backgroundDetailsToString(this, v)).join(", "));
     }
-    return new Property("background", backgroundPropertyToString(this, value));
+    return new Property("background", backgroundDetailsToString(this, value));
   }
 
   backgroundAttachment(value: string): Property {
@@ -161,10 +172,7 @@ export class PropertyFactory {
     return new Property("background-repeat", value);
   }
 
-  border(value: BorderProperty | string): Property {
-    if (typeof value === "string") {
-      return new Property("border", value);
-    }
+  border(value: BorderProperty): Property {
     return new Property("border", borderPropertyToString(this, value));
   }
 
@@ -184,20 +192,20 @@ export class PropertyFactory {
     return new Property("border-style", value);
   }
 
-  borderTop(value: string): Property {
-    return new Property("border-top", value);
+  borderTop(value: BorderProperty): Property {
+    return new Property("border-top", borderPropertyToString(this, value));
   }
 
-  borderRight(value: string): Property {
-    return new Property("border-right", value);
+  borderRight(value: BorderProperty): Property {
+    return new Property("border-right", borderPropertyToString(this, value));
   }
 
-  borderBottom(value: string): Property {
-    return new Property("border-bottom", value);
+  borderBottom(value: BorderProperty): Property {
+    return new Property("border-bottom", borderPropertyToString(this, value));
   }
 
-  borderLeft(value: string): Property {
-    return new Property("border-left", value);
+  borderLeft(value: BorderProperty): Property {
+    return new Property("border-left", borderPropertyToString(this, value));
   }
 
   borderTopColor(value: Color | string): Property {
