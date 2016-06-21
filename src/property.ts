@@ -18,12 +18,11 @@ export interface PropertyFactoryOptions {
   defaultSizeUnit?: string;
 }
 
-export type SizeProperty = Size | number | string;
+export type SizeValue = Size | number | string;
 
-export type ColorProperty = Color | string;
+export type ColorValue = Color | string;
 
-export type RectSizeProperty = [SizeProperty, SizeProperty] | [SizeProperty, SizeProperty, SizeProperty, SizeProperty] |
-  SizeProperty;
+export type RectSizeValue = [SizeValue, SizeValue] | [SizeValue, SizeValue, SizeValue, SizeValue] | SizeValue;
 
 export interface BackgroundDetails {
   attachment?: string;
@@ -41,15 +40,15 @@ export interface BorderDetails {
   color?: Color | string;
 }
 
-export type BackgroundProperty = BackgroundDetails | BackgroundDetails[] | Color | string;
+export type BackgroundValue = BackgroundDetails | BackgroundDetails[] | Color | string;
 
-export type BorderProperty = BorderDetails | string;
+export type BorderValue = BorderDetails | string;
 
 export type BlendMode = "normal" | "multiply" | "screen" | "overlay" | "darken" | "lighten" | "color-dodge" |
   "color-burn" | "hard-light" | "soft-light" | "difference" | "exclusion" | "hue" | "saturation" | "color" |
   "luminosity";
 
-function rectSizePropertyToString(f: PropertyFactory, p: RectSizeProperty): string {
+function rectSizePropertyToString(f: PropertyFactory, p: RectSizeValue): string {
   if (Array.isArray(p)) {
     return p.map((v) => f.getSizeValue(v)).join(" ");
   }
@@ -97,7 +96,7 @@ function borderDetailsToString(f: PropertyFactory, p: BorderDetails): string {
   return result.join(" ");
 }
 
-function borderPropertyToString(f: PropertyFactory, p: BorderProperty): string {
+function borderPropertyToString(f: PropertyFactory, p: BorderValue): string {
   if (typeof p === "string") {
     return p;
   }
@@ -133,7 +132,7 @@ export class PropertyFactory {
     return value.toString();
   }
 
-  getColorValue(value: Color | string): string {
+  getColorValue(value: ColorValue): string {
     if (typeof value === "string") {
       return value;
     }
@@ -160,7 +159,7 @@ export class PropertyFactory {
     return new Property("background-attachment", value);
   }
 
-  backgroundColor(value: Color | string): Property {
+  backgroundColor(value: ColorValue): Property {
     return new Property("background-color", this.getColorValue(value));
   }
 
@@ -176,7 +175,7 @@ export class PropertyFactory {
     return new Property("background-repeat", value);
   }
 
-  border(value: BorderProperty): Property {
+  border(value: BorderValue): Property {
     return new Property("border", borderPropertyToString(this, value));
   }
 
@@ -184,11 +183,11 @@ export class PropertyFactory {
     return new Property("border-collapse", value);
   }
 
-  borderColor(value: Color | string): Property {
+  borderColor(value: ColorValue): Property {
     return new Property("border-color", this.getColorValue(value));
   }
 
-  borderSpacing(value: Size | string | number): Property {
+  borderSpacing(value: SizeValue): Property {
     return new Property("border-spacing", this.getSizeValue(value));
   }
 
@@ -196,35 +195,35 @@ export class PropertyFactory {
     return new Property("border-style", value);
   }
 
-  borderTop(value: BorderProperty): Property {
+  borderTop(value: BorderValue): Property {
     return new Property("border-top", borderPropertyToString(this, value));
   }
 
-  borderRight(value: BorderProperty): Property {
+  borderRight(value: BorderValue): Property {
     return new Property("border-right", borderPropertyToString(this, value));
   }
 
-  borderBottom(value: BorderProperty): Property {
+  borderBottom(value: BorderValue): Property {
     return new Property("border-bottom", borderPropertyToString(this, value));
   }
 
-  borderLeft(value: BorderProperty): Property {
+  borderLeft(value: BorderValue): Property {
     return new Property("border-left", borderPropertyToString(this, value));
   }
 
-  borderTopColor(value: Color | string): Property {
+  borderTopColor(value: ColorValue): Property {
     return new Property("border-top-color", this.getColorValue(value));
   }
 
-  borderRightColor(value: Color | string): Property {
+  borderRightColor(value: ColorValue): Property {
     return new Property("border-right-color", this.getColorValue(value));
   }
 
-  borderBottomColor(value: Color | string): Property {
+  borderBottomColor(value: ColorValue): Property {
     return new Property("border-bottom-color", this.getColorValue(value));
   }
 
-  borderLeftColor(value: Color | string): Property {
+  borderLeftColor(value: ColorValue): Property {
     return new Property("border-left-color", this.getColorValue(value));
   }
 
@@ -244,27 +243,27 @@ export class PropertyFactory {
     return new Property("border-left-style", value);
   }
 
-  borderTopWidth(value: Size | string | number): Property {
+  borderTopWidth(value: SizeValue): Property {
     return new Property("border-top-width", this.getSizeValue(value));
   }
 
-  borderRightWidth(value: Size | string | number): Property {
+  borderRightWidth(value: SizeValue): Property {
     return new Property("border-right-width", this.getSizeValue(value));
   }
 
-  borderBottomWidth(value: Size | string | number): Property {
+  borderBottomWidth(value: SizeValue): Property {
     return new Property("border-bottom-width", this.getSizeValue(value));
   }
 
-  borderLeftWidth(value: Size | string | number): Property {
+  borderLeftWidth(value: SizeValue): Property {
     return new Property("border-left-width", this.getSizeValue(value));
   }
 
-  borderWidth(value: RectSizeProperty): Property {
+  borderWidth(value: RectSizeValue): Property {
     return new Property("border-width", rectSizePropertyToString(this, value));
   }
 
-  bottom(value: Size | string | number): Property {
+  bottom(value: SizeValue): Property {
     return new Property("bottom", this.getSizeValue(value));
   }
 
@@ -280,7 +279,7 @@ export class PropertyFactory {
     return new Property("clip", value);
   }
 
-  color(value: Color | string): Property {
+  color(value: ColorValue): Property {
     return new Property("color", this.getColorValue(value));
   }
 
@@ -340,7 +339,7 @@ export class PropertyFactory {
     return new Property("font-family", value);
   }
 
-  fontSize(value: Size | string | number): Property {
+  fontSize(value: SizeValue): Property {
     return new Property("font-size", this.getSizeValue(value));
   }
 
@@ -365,11 +364,11 @@ export class PropertyFactory {
     return new Property("font-weight", value);
   }
 
-  height(value: Size | string | number): Property {
+  height(value: SizeValue): Property {
     return new Property("height", this.getSizeValue(value));
   }
 
-  left(value: Size | string | number): Property {
+  left(value: SizeValue): Property {
     return new Property("left", this.getSizeValue(value));
   }
 
@@ -377,7 +376,7 @@ export class PropertyFactory {
     return new Property("letter-spacing", value);
   }
 
-  lineHeight(value: Size | string | number): Property {
+  lineHeight(value: SizeValue): Property {
     return new Property("line-height", this.getSizeValue(value));
   }
 
@@ -397,23 +396,23 @@ export class PropertyFactory {
     return new Property("list-style-type", value);
   }
 
-  margin(value: RectSizeProperty): Property {
+  margin(value: RectSizeValue): Property {
     return new Property("margin", rectSizePropertyToString(this, value));
   }
 
-  marginTop(value: Size | string | number): Property {
+  marginTop(value: SizeValue): Property {
     return new Property("margin-top", this.getSizeValue(value));
   }
 
-  marginRight(value: Size | string | number): Property {
+  marginRight(value: SizeValue): Property {
     return new Property("margin-right", this.getSizeValue(value));
   }
 
-  marginBottom(value: Size | string | number): Property {
+  marginBottom(value: SizeValue): Property {
     return new Property("margin-bottom", this.getSizeValue(value));
   }
 
-  marginLeft(value: Size | string | number): Property {
+  marginLeft(value: SizeValue): Property {
     return new Property("margin-left", this.getSizeValue(value));
   }
 
@@ -425,19 +424,19 @@ export class PropertyFactory {
     return new Property("marks", value);
   }
 
-  maxHeight(value: Size | string | number): Property {
+  maxHeight(value: SizeValue): Property {
     return new Property("max-height", this.getSizeValue(value));
   }
 
-  maxWidth(value: Size | string | number): Property {
+  maxWidth(value: SizeValue): Property {
     return new Property("max-width", this.getSizeValue(value));
   }
 
-  minHeight(value: Size | string | number): Property {
+  minHeight(value: SizeValue): Property {
     return new Property("min-height", this.getSizeValue(value));
   }
 
-  minWidth(value: Size | string | number): Property {
+  minWidth(value: SizeValue): Property {
     return new Property("min-width", this.getSizeValue(value));
   }
 
@@ -445,11 +444,11 @@ export class PropertyFactory {
     return new Property("orphans", value);
   }
 
-  outline(value: Size | string | number): Property {
+  outline(value: SizeValue): Property {
     return new Property("outline", this.getSizeValue(value));
   }
 
-  outlineColor(value: Color | string): Property {
+  outlineColor(value: ColorValue): Property {
     return new Property("outline-color", this.getColorValue(value));
   }
 
@@ -457,7 +456,7 @@ export class PropertyFactory {
     return new Property("outline-style", value);
   }
 
-  outlineWidth(value: RectSizeProperty): Property {
+  outlineWidth(value: RectSizeValue): Property {
     return new Property("outline-width", rectSizePropertyToString(this, value));
   }
 
@@ -473,23 +472,23 @@ export class PropertyFactory {
     return new Property("overflow-y", value);
   }
 
-  padding(value: RectSizeProperty): Property {
+  padding(value: RectSizeValue): Property {
     return new Property("padding", rectSizePropertyToString(this, value));
   }
 
-  paddingTop(value: Size | string | number): Property {
+  paddingTop(value: SizeValue): Property {
     return new Property("padding-top", this.getSizeValue(value));
   }
 
-  paddingRight(value: Size | string | number): Property {
+  paddingRight(value: SizeValue): Property {
     return new Property("padding-right", this.getSizeValue(value));
   }
 
-  paddingBottom(value: Size | string | number): Property {
+  paddingBottom(value: SizeValue): Property {
     return new Property("padding-bottom", this.getSizeValue(value));
   }
 
-  paddingLeft(value: Size | string | number): Property {
+  paddingLeft(value: SizeValue): Property {
     return new Property("padding-left", this.getSizeValue(value));
   }
 
@@ -549,7 +548,7 @@ export class PropertyFactory {
     return new Property("richness", value);
   }
 
-  right(value: Size | string | number): Property {
+  right(value: SizeValue): Property {
     return new Property("right", this.getSizeValue(value));
   }
 
@@ -605,7 +604,7 @@ export class PropertyFactory {
     return new Property("text-transform", value);
   }
 
-  top(value: Size | string | number): Property {
+  top(value: SizeValue): Property {
     return new Property("top", this.getSizeValue(value));
   }
 
@@ -637,7 +636,7 @@ export class PropertyFactory {
     return new Property("widows", value);
   }
 
-  width(value: Size | string | number): Property {
+  width(value: SizeValue): Property {
     return new Property("width", this.getSizeValue(value));
   }
 
@@ -726,11 +725,11 @@ export class PropertyFactory {
     return new Property("column-count", value.toString());
   }
 
-  columnWidth(value: Size | number | string): Property {
+  columnWidth(value: SizeValue): Property {
     return new Property("column-width", this.getSizeValue(value));
   }
 
-  columnGap(value: Size | number | string): Property {
+  columnGap(value: SizeValue): Property {
     return new Property("column-gap", this.getSizeValue(value));
   }
 
