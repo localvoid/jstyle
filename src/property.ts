@@ -24,6 +24,8 @@ export type ColorValue = Color | string;
 
 export type RectSizeValue = [SizeValue, SizeValue] | [SizeValue, SizeValue, SizeValue, SizeValue] | SizeValue;
 
+export type RectColorValue = [ColorValue, ColorValue] | [ColorValue, ColorValue, ColorValue, ColorValue] | ColorValue;
+
 export interface BackgroundDetails {
   attachment?: string;
   box?: string;
@@ -53,6 +55,13 @@ function rectSizePropertyToString(f: PropertyFactory, p: RectSizeValue): string 
     return p.map((v) => f.getSizeValue(v)).join(" ");
   }
   return f.getSizeValue(p);
+}
+
+function rectColorPropertyToString(f: PropertyFactory, p: RectColorValue): string {
+  if (Array.isArray(p)) {
+    return p.map((v) => f.getColorValue(v)).join(" ");
+  }
+  return f.getColorValue(p);
 }
 
 function backgroundDetailsToString(f: PropertyFactory, p: BackgroundDetails): string {
@@ -183,12 +192,12 @@ export class PropertyFactory {
     return new Property("border-collapse", value);
   }
 
-  borderColor(value: ColorValue): Property {
-    return new Property("border-color", this.getColorValue(value));
+  borderColor(value: RectColorValue): Property {
+    return new Property("border-color", rectColorPropertyToString(this, value));
   }
 
-  borderSpacing(value: SizeValue): Property {
-    return new Property("border-spacing", this.getSizeValue(value));
+  borderSpacing(value: RectSizeValue): Property {
+    return new Property("border-spacing", rectSizePropertyToString(this, value));
   }
 
   borderStyle(value: string): Property {
@@ -327,7 +336,7 @@ export class PropertyFactory {
     return new Property("empty-cells", value);
   }
 
-  float(value: string): Property {
+  float(value: "left" | "right" | "none"): Property {
     return new Property("float", value);
   }
 
