@@ -320,7 +320,7 @@ export class PropertyFactory {
     return new Property("cursor", value);
   }
 
-  direction(value: string): Property {
+  direction(value: "ltr" | "rtl"): Property {
     return new Property("direction", value);
   }
 
