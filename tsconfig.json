@@ -1,27 +1,28 @@
 {
-  "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "outDir": "dist/js",
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "removeComments": false,
-    "moduleResolution": "node"
-  },
-  "files": [
-    "src/bundle.ts",
-    "src/context.ts",
-    "src/emit_css.ts",
-    "src/jstyle.ts",
-    "src/module.ts",
-    "src/placeholder.ts",
-    "src/property.ts",
-    "src/rule.ts",
-    "src/visitor.ts",
-    "src/passes/clean_tree.ts",
-    "src/passes/flatten_properties.ts",
-    "src/passes/sort_properties.ts",
-    "src/passes/unique_properties.ts"
-  ],
-  "compileOnSave": false
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "outDir": "dist/js",
+        "declaration": true,
+        "declarationDir": "dist/typings",
+        "inlineSourceMap": false,
+        "inlineSources": false,
+        "importHelpers": true,
+        "noEmitHelpers": true,
+        "removeComments": false,
+        "lib": [
+            "es6"
+        ],
+        "forceConsistentCasingInFileNames": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "strictNullChecks": true
+    },
+    "include": [
+        "src/**/*.ts"
+    ],
+    "compileOnSave": false
 }

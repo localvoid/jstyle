@@ -9,4 +9,8 @@ export class Placeholder {
     this.data.push(value);
     return this;
   }
+
+  toString(): string {
+    return this.data.join(", ");
+  }
 }

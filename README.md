@@ -33,10 +33,10 @@ const Base = new jstyle.Module()
 const Main = new jstyle.Module()
   .require(Base),
   .init((c) => {
-    c.placeholders("buttons").add(c.className("MyButton"));
+    c.placeholders("buttons").add(".MyButton");
   })
   .rules((c, p) => [
-    select(c.className("Main"), [
+    select(".Main", [
       p.top("20px")
     ]),
   ]);
@@ -50,7 +50,6 @@ module.exports = {
     env.set("button-margin", 10);
     return env;
   },
-  minifyClassNames: true,
 };
 ```
 
@@ -59,15 +58,6 @@ Launch `jstyle`:
 ```sh
 $ jstyle -c jstyle.conf.js -o build
 ```
-
-## Examples
-
-- [Basic](https://github.com/localvoid/jstyle/tree/master/examples/basic)
-- [Placeholders](https://github.com/localvoid/jstyle/tree/master/examples/placeholders)
-- [Variables](https://github.com/localvoid/jstyle/tree/master/examples/variables)
-- [TypeScript](https://github.com/localvoid/jstyle/tree/master/examples/typescript)
-- [Minification](https://github.com/localvoid/jstyle/tree/master/examples/minification)
-- [Module splitting](https://github.com/localvoid/jstyle/tree/master/examples/multiple_chunks)
 
 ## API
 
@@ -79,21 +69,9 @@ $ jstyle -c jstyle.conf.js -o build
 
 Returns variable initialized in config environment, or default value if environment doesn't contain it.
 
-#### Get Tag Name
-
-`context.tagName(name: string | Symbol): string`
-
-If tag name minification is enabled, it will return minified tag name, otherwise it will return the same value.
-
-#### Get Class Name
-
-`context.className(name: string | Symbol): string`
-
-If class name minification is enabled, it will return minified class name, otherwise it will return the same value.
-
 #### Get Placeholder
 
-`context.placeholder(name: string | Symbol): Placeholder`
+`context.placeholder(name: string): Placeholder`
 
 Returns a placeholder associated with the name parameter.
 
@@ -122,11 +100,8 @@ Assign a function that should return rules for the module.
 ```ts
 interface ConfigModule {
   chunks: {fileName: string, modules: Module | Module[]}[];
-  baseChunkFileName?: string = "base.css";
-  env?: Map<string | Symbol, any> | ((defs: {[key: string]: string}) => Map<string | Symbol, any>) = {};
-  minifyClassNames?: boolean | string = false;
-  minifyTagNames?: boolean | string = false;
-  tagNamePrefix?: string = "x";
+  baseChunkFileName: string = "base.css";
+  env: Map<string | Symbol, any> | ((defs: { [key: string]: string }) => Map<string | Symbol, any>) = {};
 }
 
 type Config = ConfigModule | ((defs: {[key: string]: string}) => ConfigModule);

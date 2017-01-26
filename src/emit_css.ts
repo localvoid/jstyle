@@ -1,7 +1,6 @@
-import {Rule, SelectorRule, MediaRule, KeyframesRule} from "./rule";
-import {Placeholder} from "./placeholder";
-import {Property} from "./property";
-import {Visitor} from "./visitor";
+import { Rule, SelectorRule, MediaRule, KeyframesRule } from "./rule";
+import { Property } from "./property";
+import { Visitor } from "./visitor";
 
 class EmitCssVisitor extends Visitor {
   result: string;
@@ -15,11 +14,7 @@ class EmitCssVisitor extends Visitor {
 
   visitSelectorRule(rule: SelectorRule): SelectorRule | null {
     this._writePadding();
-    if (rule.selector instanceof Placeholder) {
-      this.result += rule.selector.data.join(",");
-    } else {
-      this.result += rule.selector.join(",");
-    }
+    this.result += Array.isArray(rule.selector) ? rule.selector.join(", ") : rule.selector.toString();
     this.result += " {\n";
     this.depth++;
     const ret = super.visitSelectorRule(rule);

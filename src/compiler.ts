@@ -1,8 +1,8 @@
-import {Context} from "./context";
-import {Rule} from "./rule";
-import {Chunk, bundle} from "./bundle";
-import {emitCss} from "./emit_css";
-import {uniqueProperties} from "./passes/unique_properties";
+import { Context } from "./context";
+import { Rule } from "./rule";
+import { Chunk, bundle } from "./bundle";
+import { emitCss } from "./emit_css";
+import { uniqueProperties } from "./passes/unique_properties";
 
 export class CompiledChunk {
   readonly fileName: string;
@@ -25,7 +25,7 @@ export class CompilationArtifact {
 export const DefaultCompilationPasses = [uniqueProperties];
 
 export function compile(chunks: Chunk[], context: Context, passes: Array<(rules: Array<Rule | null>) => Rule[]>,
-    baseChunkFileName: string): CompilationArtifact {
+  baseChunkFileName: string): CompilationArtifact {
 
   const bundledChunks = bundle(chunks, baseChunkFileName);
   const compiledChunks = [] as CompiledChunk[];

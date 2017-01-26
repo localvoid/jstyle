@@ -1,10 +1,10 @@
-import {Visitor} from "../visitor";
-import {Rule, SelectorRule} from "../rule";
-import {Property} from "../property";
+import { Visitor } from "../visitor";
+import { Rule, SelectorRule } from "../rule";
+import { Property } from "../property";
 
 class UniqueProperties extends Visitor {
   _currentSelector: SelectorRule | null;
-  _currentProperties: {[name: string]: Property} | null;
+  _currentProperties: { [name: string]: Property } | null;
 
   constructor() {
     super();

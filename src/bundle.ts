@@ -1,4 +1,4 @@
-import {Module} from "./module";
+import { Module } from "./module";
 
 class ModuleData {
   readonly module: Module;
@@ -18,9 +18,10 @@ class ModuleData {
 }
 
 function _collectDeps(chunkId: number, module: Module, registry: Map<number, ModuleData>,
-    sortedModules: ModuleData[]): void {
+  sortedModules: ModuleData[]): void {
   let data = registry.get(module.id);
   let addModule = false;
+
   if (data === undefined) {
     data = new ModuleData(module);
     registry.set(module.id, data);

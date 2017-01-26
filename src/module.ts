@@ -1,6 +1,6 @@
-import {Context} from "./context";
-import {Rule} from "./rule";
-import {PropertyFactory, PropertyFactoryOptions, DefaultPropertyFactory} from "./property";
+import { Context } from "./context";
+import { Rule } from "./rule";
+import { PropertyFactory, PropertyFactoryOptions, DefaultPropertyFactory } from "./property";
 
 let _nextId = 0;
 

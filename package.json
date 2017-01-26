@@ -1,6 +1,6 @@
 {
   "name": "jstyle",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "main": "dist/js/jstyle.js",
   "typings": "dist/typings/jstyle.d.ts",
   "description": "Javascript to css compiler",
@@ -29,15 +29,13 @@
     "README.md"
   ],
   "devDependencies": {
-    "del": "^2.2.0",
-    "gulp": "github:gulpjs/gulp#4.0",
-    "gulp-tslint": "^5.0.0",
-    "gulp-typescript": "^2.13.4",
-    "merge2": "^1.0.2",
-    "tslint": "^3.10.2",
-    "typescript": "^1.9.0-dev.20160523-1.0"
+    "ivi-tslint-rules": "^0.1.0",
+    "tslint": "^4.4.1",
+    "typescript": "^2.1.5"
   },
-  "dependencies": {
-    "inkdrop": "^0.2.0"
+  "scripts": {
+    "lint": "tslint --project tsconfig.json",
+    "build": "tsc",
+    "prepublish": "tslint --project tsconfig.json"
   }
 }

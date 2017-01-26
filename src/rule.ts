@@ -1,8 +1,8 @@
-import {Property} from "./property";
-import {Placeholder} from "./placeholder";
+import { Property } from "./property";
+import { Placeholder } from "./placeholder";
 
 export type RuleChildrenValue = Rule | Property | null | RuleChildren;
-export interface RuleChildren extends Array<RuleChildrenValue> {}
+export interface RuleChildren extends Array<RuleChildrenValue> { }
 
 export abstract class Rule {
   readonly children: RuleChildren;

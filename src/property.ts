@@ -1,5 +1,4 @@
-import {Color} from "./color";
-import {Size} from "./size";
+import { Size } from "./size";
 
 /**
  * CSS Property
@@ -20,16 +19,14 @@ export interface PropertyFactoryOptions {
 
 export type SizeValue = Size | number | string;
 
-export type ColorValue = Color | string;
-
 export type RectSizeValue = [SizeValue, SizeValue] | [SizeValue, SizeValue, SizeValue, SizeValue] | SizeValue;
 
-export type RectColorValue = [ColorValue, ColorValue] | [ColorValue, ColorValue, ColorValue, ColorValue] | ColorValue;
+export type Rectstring = [string, string] | [string, string, string, string] | string;
 
 export interface BackgroundDetails {
   attachment?: string;
   box?: string;
-  color?: Color | string;
+  color?: string;
   image?: string;
   position?: string;
   repeat?: string;
@@ -39,10 +36,10 @@ export interface BackgroundDetails {
 export interface BorderDetails {
   width?: Size | number | string;
   style?: "none" | "hidden" | "dotted" | "dashed" | "solid" | "double" | "groove" | "ridge" | "inset" | "outset";
-  color?: Color | string;
+  color?: string;
 }
 
-export type BackgroundValue = BackgroundDetails | BackgroundDetails[] | Color | string;
+export type BackgroundValue = BackgroundDetails | BackgroundDetails[] | string;
 
 export type BorderValue = BorderDetails | string;
 
@@ -57,11 +54,11 @@ function rectSizePropertyToString(f: PropertyFactory, p: RectSizeValue): string 
   return f.getSizeValue(p);
 }
 
-function rectColorPropertyToString(f: PropertyFactory, p: RectColorValue): string {
+function rectColorPropertyToString(f: PropertyFactory, p: Rectstring): string {
   if (Array.isArray(p)) {
-    return p.map((v) => f.getColorValue(v)).join(" ");
+    return p.join(" ");
   }
-  return f.getColorValue(p);
+  return p;
 }
 
 function backgroundDetailsToString(f: PropertyFactory, p: BackgroundDetails): string {
@@ -73,7 +70,7 @@ function backgroundDetailsToString(f: PropertyFactory, p: BackgroundDetails): st
     result.push(p.box);
   }
   if (p.color !== undefined) {
-    result.push(f.getColorValue(p.color));
+    result.push(p.color);
   }
   if (p.image !== undefined) {
     result.push(p.image);
@@ -91,7 +88,7 @@ function backgroundDetailsToString(f: PropertyFactory, p: BackgroundDetails): st
 }
 
 function borderDetailsToString(f: PropertyFactory, p: BorderDetails): string {
-  const result = [] as string [];
+  const result = [] as string[];
   if (p.width !== undefined) {
     result.push(f.getSizeValue(p.width));
   }
@@ -99,7 +96,7 @@ function borderDetailsToString(f: PropertyFactory, p: BorderDetails): string {
     result.push(p.style);
   }
   if (p.color !== undefined) {
-    result.push(f.getColorValue(p.color));
+    result.push(p.color);
   }
 
   return result.join(" ");
@@ -141,23 +138,13 @@ export class PropertyFactory {
     return value.toString();
   }
 
-  getColorValue(value: ColorValue): string {
-    if (typeof value === "string") {
-      return value;
-    }
-    if (value.isOpaque) {
-      return value.toHexString();
-    }
-    return value.toRgbString();
-  }
-
   azimuth(value: string): Property {
     return new Property("azimuth", value);
   }
 
-  background(value: BackgroundDetails[] | BackgroundDetails | Color | string): Property {
-    if (typeof value === "string" || value instanceof Color) {
-      return new Property("background", this.getColorValue(value));
+  background(value: BackgroundDetails[] | BackgroundDetails | string): Property {
+    if (typeof value === "string") {
+      return new Property("background", value);
     } else if (Array.isArray(value)) {
       return new Property("background", value.map((v) => backgroundDetailsToString(this, v)).join(", "));
     }
@@ -168,8 +155,8 @@ export class PropertyFactory {
     return new Property("background-attachment", value);
   }
 
-  backgroundColor(value: ColorValue): Property {
-    return new Property("background-color", this.getColorValue(value));
+  backgroundColor(value: string): Property {
+    return new Property("background-color", value);
   }
 
   backgroundImage(value: string): Property {
@@ -192,7 +179,7 @@ export class PropertyFactory {
     return new Property("border-collapse", value);
   }
 
-  borderColor(value: RectColorValue): Property {
+  borderColor(value: Rectstring): Property {
     return new Property("border-color", rectColorPropertyToString(this, value));
   }
 
@@ -220,20 +207,20 @@ export class PropertyFactory {
     return new Property("border-left", borderPropertyToString(this, value));
   }
 
-  borderTopColor(value: ColorValue): Property {
-    return new Property("border-top-color", this.getColorValue(value));
+  borderTopColor(value: string): Property {
+    return new Property("border-top-color", value);
   }
 
-  borderRightColor(value: ColorValue): Property {
-    return new Property("border-right-color", this.getColorValue(value));
+  borderRightColor(value: string): Property {
+    return new Property("border-right-color", value);
   }
 
-  borderBottomColor(value: ColorValue): Property {
-    return new Property("border-bottom-color", this.getColorValue(value));
+  borderBottomColor(value: string): Property {
+    return new Property("border-bottom-color", value);
   }
 
-  borderLeftColor(value: ColorValue): Property {
-    return new Property("border-left-color", this.getColorValue(value));
+  borderLeftColor(value: string): Property {
+    return new Property("border-left-color", value);
   }
 
   borderTopStyle(value: string): Property {
@@ -288,8 +275,8 @@ export class PropertyFactory {
     return new Property("clip", value);
   }
 
-  color(value: ColorValue): Property {
-    return new Property("color", this.getColorValue(value));
+  color(value: string): Property {
+    return new Property("color", value);
   }
 
   content(value: string): Property {
@@ -369,7 +356,7 @@ export class PropertyFactory {
   }
 
   fontWeight(value: "normal" | "bold" | "bolder" | "lighter" | "100" | "200" | "300" | "400" | "500" | "600" | "700" |
-      "800" | "900"): Property {
+    "800" | "900"): Property {
     return new Property("font-weight", value);
   }
 
@@ -457,8 +444,8 @@ export class PropertyFactory {
     return new Property("outline", this.getSizeValue(value));
   }
 
-  outlineColor(value: ColorValue): Property {
-    return new Property("outline-color", this.getColorValue(value));
+  outlineColor(value: string): Property {
+    return new Property("outline-color", value);
   }
 
   outlineStyle(value: string): Property {
@@ -702,7 +689,7 @@ export class PropertyFactory {
   }
 
   touchAction(value: "auto" | "none" | "pan-x" | "pan-left" | "pan-right" | "pan-y" | "pan-up" | "pan-down" |
-      "manipulation"): Property {
+    "manipulation"): Property {
     return new Property("touch-action", value);
   }
 

@@ -1,5 +1,5 @@
-import {Rule, RuleChildren, SelectorRule, MediaRule, KeyframesRule} from "./rule";
-import {Property} from "./property";
+import { Rule, RuleChildren, SelectorRule, MediaRule, KeyframesRule } from "./rule";
+import { Property } from "./property";
 
 export abstract class Visitor {
   visit(rules: Array<Rule | null>): Rule[] {
