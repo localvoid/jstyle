@@ -24,7 +24,7 @@ export class Size {
     return new Size(value, "ex");
   }
 
-  static percent(value: number): Size {
+  static pct(value: number): Size {
     return new Size(value, "%");
   }
 

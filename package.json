@@ -1,8 +1,8 @@
 {
   "name": "jstyle",
-  "version": "0.3.0",
-  "main": "dist/js/jstyle.js",
-  "typings": "dist/typings/jstyle.d.ts",
+  "version": "0.4.0",
+  "main": "dist/js/index.js",
+  "typings": "dist/typings/index.d.ts",
   "description": "Javascript to css compiler",
   "license": "Apache-2.0",
   "author": {
@@ -37,5 +37,8 @@
     "lint": "tslint --project tsconfig.json",
     "build": "tsc",
     "prepublish": "tslint --project tsconfig.json"
+  },
+  "dependencies": {
+    "postcss": "^5.2.12"
   }
 }
