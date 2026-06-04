@@ -14,9 +14,7 @@ import { FLEX } from './layout.js';
  * flex('1 0 200px')
  * ```
  */
-export const flex = declProp<'none' | 'auto' | '1' | '0 1 auto' | '1 1 0%' | CssPropertyValue>(
-  'flex',
-);
+export const flex = declProp<'none' | 'auto' | CssPropertyValue>('flex');
 
 /**
  * Sets flex direction and wrapping in one declaration.
@@ -33,7 +31,9 @@ export const flexFlow = declProp<CssPropertyValue>('flex-flow');
  * - `max-content` — largest possible
  * - `<length>` | `<percentage>`
  */
-export const flexBasis = declProp<CssPropertyValue>('flex-basis');
+export const flexBasis = declProp<'auto' | 'min-content' | 'max-content' | CssPropertyValue>(
+  'flex-basis',
+);
 
 /**
  * Sets flex grow factor (how much item grows relative to siblings).
