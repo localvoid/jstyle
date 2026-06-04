@@ -1,5 +1,29 @@
+import { join } from 'node:path';
+import { updateFile } from 'assetcraft/file';
+
+import type { CssClassMap } from '../css/core.js';
 import type { CssMap, CssMapNamespace } from '../map/index.js';
+import type { Emitter } from './emitter.js';
 import { indent } from './utils.js';
+
+export interface RustEmitterOptions {
+  outDir: string;
+  clean?: boolean;
+}
+
+export class RustEmitter implements Emitter {
+  readonly outDir: string;
+  readonly clean: boolean;
+
+  constructor(options: RustEmitterOptions) {
+    this.outDir = options.outDir;
+    this.clean = options.clean ?? false;
+  }
+
+  async emit(map: CssMap, _classMaps: Map<string, CssClassMap[]>) {
+    await updateFile(join(this.outDir, 'src', 'lib.rs'), emitRust(map), true);
+  }
+}
 
 interface RustModule {
   children: Map<string, RustModule>;

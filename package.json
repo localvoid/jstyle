@@ -28,6 +28,8 @@
     ".": "./dist/index.js",
     "./props": "./dist/props.js",
     "./props/font-face": "./dist/props/font-face.js",
+    "./emit/js": "./dist/emit/js.js",
+    "./emit/rust": "./dist/emit/rust.js",
     "./emit": "./dist/emit.js"
   },
   "scripts": {

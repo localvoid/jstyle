@@ -17,9 +17,10 @@ src/
     size.ts
   emit.ts          # CSS emitting
   emit/            # Emit modules
-    css.ts         # CSS emit
-    js.ts          # JS emit
-    rust.ts        # Rust emit
+    emitter.ts     # Emitter interface
+    css.ts         # CSS emitter
+    js.ts          # JS emitter
+    rust.ts        # Rust emitter
   props.ts         # Re-exports props
   props/           # CSS properties
   map/             # Mapping utilities

@@ -1,7 +1,43 @@
+import { join } from 'node:path';
+import { cleanDirRecursive, updateFile } from 'assetcraft/file';
+
 import type { CssClassSelector } from '../css/selector.js';
 import type { CssMap, CssMapNamespace } from '../map/index.js';
-import { type CssClassMap, CssClassMapState, type CssClassMapStateEntry } from '../css/core.js';
+import type { Emitter } from './emitter.js';
+import { CssClassMapState, type CssClassMap, type CssClassMapStateEntry } from '../css/core.js';
 import { indent } from './utils.js';
+
+export interface JSEmitterOptions {
+  outDir: string;
+  clean?: boolean;
+}
+
+export class JSEmitter implements Emitter {
+  readonly outDir: string;
+  readonly clean: boolean;
+
+  constructor(options: JSEmitterOptions) {
+    this.outDir = options.outDir;
+    this.clean = options.clean ?? false;
+  }
+
+  async emit(map: CssMap, classMaps: Map<string, CssClassMap[]>) {
+    const generatedFiles = [];
+    for (const m of map.namespaces.values()) {
+      const { js, ts } = emitJS(map, m, classMaps.get(m.id));
+      const fileName = m.id.replaceAll('.', '/');
+      const path = join(this.outDir, fileName);
+
+      generatedFiles.push(fileName + '.js');
+      await updateFile(path + '.js', js, true);
+      generatedFiles.push(fileName + '.d.ts');
+      await updateFile(path + '.d.ts', ts, true);
+    }
+    if (this.clean) {
+      await cleanDirRecursive(this.outDir, generatedFiles);
+    }
+  }
+}
 
 export function emitJS(
   map: CssMap,

@@ -15,7 +15,7 @@ Programmatic TypeScript-first CSS builder.
 ```ts
 import { ns, style, media } from 'jstyle'; // Core types and factories
 import * as p from 'jstyle/props'; // CSS property constructors
-import { emitCss } from 'jstyle/emit'; // CSS emit orchestrator
+import { emit } from 'jstyle/emit'; // CSS emit orchestrator
 ```
 
 ## Core Concepts

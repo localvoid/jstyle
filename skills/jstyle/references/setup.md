@@ -2,14 +2,16 @@
 
 ## Emitting
 
-### emitCss Orchestrator
+### emit Orchestrator
 
-The `emitCss()` function from `jstyle/emit` processes all entries, minifies via lightningcss, compresses assets, and generates output files.
+The `emit()` function from `jstyle/emit` processes all entries, minifies via lightningcss, compresses assets, and generates output files.
 
 ```ts
-import { emitCss } from 'jstyle/emit';
+import { emit } from 'jstyle/emit';
+import { JSEmitter } from 'jstyle/emit/js';
+import { RustEmitter } from 'jstyle/emit/rust';
 
-await emitCss({
+await emit({
   input: [
     {
       name: 'app',
@@ -22,8 +24,10 @@ await emitCss({
   ],
   outDir: './dist',
   renderURL: (name, sha) => `/assets/${name}.${sha}.css`,
-  js: './dist/js', // optional: emit JS modules
-  rust: './dist/app.rs', // optional: emit Rust module
+  emit: [
+    new JSEmitter({ outDir: './packages/css/src', clean: true }), // optional: emit JS modules
+    new RustEmitter({ outDir: './crates/css', clean: true }), // optional: emit Rust module
+  ],
   minify: true, // optional: minify CSS
 });
 ```
@@ -33,7 +37,7 @@ await emitCss({
 Pass multiple entries to build separate CSS bundles:
 
 ```ts
-await emitCss({
+await emit({
   input: [
     { name: 'app', build: async () => ({ css: appStyles }) },
     { name: 'vendor', build: async () => ({ css: vendorStyles }) },
@@ -45,10 +49,10 @@ await emitCss({
 
 ## CssMap Persistence
 
-The `CssMap` (class name mapping) can be serialized to disk to maintain stable obfuscated IDs across builds. Pass the `map` option to `emitCss()`:
+The `CssMap` (class name mapping) can be serialized to disk to maintain stable obfuscated IDs across builds. Pass the `map` option to `emit()`:
 
 ```ts
-await emitCss({
+await emit({
   input: [
     /* ... */
   ],
@@ -60,7 +64,7 @@ await emitCss({
 
 ## Asset Manifest
 
-`emitCss()` generates a manifest file with content hashes, pre-compressed variants (gzip, brotli, zstd), and URLs. Configure via:
+`emit()` generates a manifest file with content hashes, pre-compressed variants (gzip, brotli, zstd), and URLs. Configure via:
 
 - `manifest` — output path (defaults to `outDir/manifest.json`)
 - `renderURL` — function that generates the public URL from name + sha256
@@ -68,4 +72,4 @@ await emitCss({
 
 ## CSS Minification
 
-Pass `minify: true` to `emitCss()` to enable lightningcss-based minification.
+Pass `minify: true` to `emit()` to enable lightningcss-based minification.

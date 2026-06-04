@@ -22,70 +22,50 @@ import { ManifestBuilder } from 'assetcraft/manifest/build';
 import { transform } from 'lightningcss';
 
 import type { CssClassMap, CssNode } from './css/core.js';
+import type { Emitter } from './emit/emitter.js';
 import { emitCssCode } from './emit/css.js';
-import { emitJS } from './emit/js.js';
-import { emitRust } from './emit/rust.js';
 import { CssMap } from './map/index.js';
 
-export interface EmitCssOptions {
-  readonly input: EmitCssInputEntry[];
+export interface EmitOptions {
+  readonly input: InputEntry[];
   readonly outDir: string;
   readonly renderURL: (name: string, sha256: string) => string;
   readonly manifest?: string;
   readonly map?: string;
-  readonly js?: string;
-  readonly rust?: string;
+  readonly emit?: Emitter[];
   readonly assets?: string[];
   readonly headers?: Record<string, string>;
   readonly minify?: boolean;
-  readonly clean?: EmitCssCleanOptions | true;
+  readonly clean?: boolean;
 }
 
-export interface EmitCssInputEntry {
+export interface InputEntry {
   readonly name: string;
   readonly build: BuildCssFunction;
   readonly tags?: string[];
   readonly headers?: Record<string, string>;
 }
 
-export interface EmitCssCleanOptions {
-  readonly css?: boolean;
-  readonly js?: boolean;
-}
-
-export interface BuildCssContext {
+export interface CssContext {
   resolve(name: string): string;
 }
 
-export interface BuildCssArtifact {
+export interface CssArtifact {
   readonly css: CssNode;
   readonly links?: string;
   readonly headers?: Record<string, string>;
 }
 
-export type BuildCssFunction = (ctx: BuildCssContext) => Promise<BuildCssArtifact>;
+export type BuildCssFunction = (ctx: CssContext) => Promise<CssArtifact>;
 
-export async function emitCss(options: EmitCssOptions): Promise<Manifest> {
+export async function emit(options: EmitOptions): Promise<Manifest> {
   const outDir = options.outDir;
   const manifestRelPath = options.manifest ?? join(outDir, 'manifest.json');
   const manifestAbsDirname = dirname(presolve(manifestRelPath));
   const renderURL = options.renderURL;
   const cssMapPath = options.map;
   const minify = options.minify ?? false;
-
-  let cleanCSS = false;
-  let cleanJS = false;
-  if (options.clean !== void 0) {
-    if (typeof options.clean === 'boolean') {
-      if (options.clean === true) {
-        cleanCSS = true;
-        cleanJS = true;
-      }
-    } else {
-      cleanCSS = options.clean.css ?? false;
-      cleanJS = options.clean.js ?? false;
-    }
-  }
+  const clean = options.clean ?? false;
 
   let prevManifest: any;
   try {
@@ -118,7 +98,7 @@ export async function emitCss(options: EmitCssOptions): Promise<Manifest> {
     return entry.url.origin + entry.url.path;
   };
 
-  const ctx: BuildCssContext = { resolve };
+  const ctx: CssContext = { resolve };
   const generatedFiles = [];
   if (pathIsWithin(outDir, manifestRelPath)) {
     generatedFiles.push(relative(outDir, manifestRelPath));
@@ -207,32 +187,17 @@ export async function emitCss(options: EmitCssOptions): Promise<Manifest> {
     }
 
     await updateFile(manifestRelPath, JSON.stringify(manifestBuilder.entries, void 0, 2), true);
-    if (cleanCSS) {
+    if (clean) {
       await cleanDirRecursive(outDir, generatedFiles);
     }
     if (cssMapPath) {
       await updateFile(cssMapPath, cssMap.serialize());
     }
 
-    if (options.js) {
-      const generatedJS = [];
-      for (const m of cssMap.namespaces.values()) {
-        const { js, ts } = emitJS(cssMap, m, classMaps.get(m.id));
-        const fileName = m.id.replaceAll('.', '/');
-        const path = join(options.js, fileName);
-
-        generatedJS.push(fileName + '.js');
-        await updateFile(path + '.js', js, true);
-        generatedJS.push(fileName + '.d.ts');
-        await updateFile(path + '.d.ts', ts, true);
+    if (options.emit) {
+      for (const emitter of options.emit) {
+        await emitter.emit(cssMap, classMaps);
       }
-      if (cleanJS) {
-        await cleanDirRecursive(options.js, generatedJS);
-      }
-    }
-
-    if (options.rust) {
-      await updateFile(options.rust, emitRust(cssMap), true);
     }
   }
 

@@ -24,7 +24,7 @@ bun add jstyle
 ## Quick Start
 
 ```ts
-import { ns, style, emitCss } from 'jstyle';
+import { ns, style, emit } from 'jstyle';
 import * as p from 'jstyle/props';
 
 const APP = ns('app');
@@ -36,7 +36,7 @@ const rules = [
   style(BUTTON.hover, [p.backgroundColor('darkblue')]),
 ];
 
-await emitCss({
+await emit({
   input: [{ name: 'app', build: async () => ({ css: rules }) }],
   outDir: './dist',
   renderURL: (name, hash) => `/assets/${name}.${hash}.css`,
@@ -48,7 +48,9 @@ await emitCss({
 ```ts
 import { ns, style, media, $, env, important } from 'jstyle'; // Core types and factories
 import * as p from 'jstyle/props'; // CSS property constructors
-import { emitCss } from 'jstyle/emit';
+import { emit } from 'jstyle/emit'; // Emit orchestrator
+import { JSEmitter } from 'jstyle/emit/js'; // JS emitter
+import { RustEmitter } from 'jstyle/emit/rust'; // Rust emitter
 ```
 
 ## Core Concepts
@@ -159,9 +161,11 @@ const buttonMap = NS.classMap({
 ## Emitting
 
 ```ts
-import { emitCss } from 'jstyle/emit';
+import { emit } from 'jstyle/emit';
+import { JSEmitter } from 'jstyle/emit/js';
+import { RustEmitter } from 'jstyle/emit/rust';
 
-await emitCss({
+await emit({
   input: [
     {
       name: 'app',
@@ -174,8 +178,10 @@ await emitCss({
   ],
   outDir: './dist',
   renderURL: (name, sha) => `/assets/${name}.${sha}.css`,
-  js: './dist/js', // optional: emit JS modules
-  rust: './dist/app.rs', // optional: emit Rust module
+  emit: [
+    new JSEmitter({ outDir: './packages/css/src', clean: true }), // optional: emit JS modules
+    new RustEmitter({ outDir: './crates/css', clean: true }), // optional: emit Rust module
+  ],
   minify: true, // optional: minify CSS
   map: './dist/.cssmap.json', // optional: persist ID mappings
 });
@@ -183,9 +189,10 @@ await emitCss({
 
 ## Output Formats
 
-- **CSS**
-- **JS** — identifier bindings + TypeScript declarations
-- **Rust** — identifier bindings
+- **CSS** — Always emitted
+- **JS** — Via `JSEmitter` from `jstyle/emit/js`: identifier bindings + TypeScript declarations
+- **Rust** — Via `RustEmitter` from `jstyle/emit/rust`: identifier bindings
+- **Custom** — Implement the `Emitter` interface from `jstyle/emit/emitter` for custom output formats
 
 ## License
 
