@@ -101,11 +101,11 @@ style('modal', [important(p.zIndex('9999'))]); // z-index: 9999 !important;
 Pseudo-classes and pseudo-elements via getter properties:
 
 ```ts
-const btn = NS.class('button');
-btn.hover; // :hover
-btn.before; // ::before
-btn.nthChild('2n+1'); // :nth-child(2n+1)
-btn.has(p.color('red')); // :has(.red)
+const BTN = NS.class('button');
+BTN.hover; // :hover
+BTN.before; // ::before
+BTN.nthChild('2n+1'); // :nth-child(2n+1)
+BTN.has(NS.class('red')); // :has(.red)
 ```
 
 Combinators for complex selectors:
@@ -154,7 +154,7 @@ const buttonMap = NS.classMap({
     active: BUTTON_ACTIVE,
     size: [null, BUTTON_SM, BUTTON_MD, BUTTON_LG],
   },
-  exclude: (state) => state.get('hovered') === true && state.get('active') === true,
+  exclude: (state) => state.get('hovered') && state.get('active'),
 });
 ```
 

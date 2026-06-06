@@ -189,10 +189,10 @@ Functional pseudo-classes take arguments:
 
 ```ts
 s.nthChild('2n+1'); // :nth-child(2n+1)
-s.has(p.color('red')); // :has(.red)
-s.is(card, button); // :is(.card, .button)
-s.not(card); // :not(.card)
-s.where(card); // :where(.card)
+s.has(RED); // :has(.red)
+s.is(CARD, BUTTON); // :is(.card, .button)
+s.not(CARD); // :not(.card)
+s.where(CARD); // :where(.card)
 s.lang('en'); // :lang(en)
 s.dir('ltr'); // :dir(ltr)
 ```
@@ -357,7 +357,7 @@ const buttonMap = NS.classMap({
     active: BUTTON_ACTIVE, // boolean
     size: [null, BUTTON_SM, BUTTON_MD, BUTTON_LG], // multi-value (index-based)
     // Exclude combinations where both `hovered` and `active` are true (impossible state):
-    exclude: (state) => state.get('hovered') === true && state.get('active') === true,
+    exclude: (state) => state.get('hovered') && state.get('active'),
   },
 });
 ```
