@@ -44,7 +44,8 @@ export type CssSelectorPart =
   | { type: 'class'; ns: CssNamespace; id: string }
   | { type: 'attr'; name: string; op?: string; value?: string }
   | { type: 'pseudo-class'; name: string; args?: CssSelectorQuery }
-  | { type: 'pseudo-element'; name: string };
+  | { type: 'pseudo-element'; name: string }
+  | { type: 'self' };
 
 /** Selector query: a CssSelector or array of queries (comma-separated). */
 export type CssSelectorQuery = string | CssSelector | CssSelectorQuery[];
@@ -397,7 +398,17 @@ export class CssComplexSelector extends CssSelector {
   }
 }
 
-/** Creates a `div` element type selector. */
-export function div(): CssElementSelector {
-  return new CssElementSelector('div');
+export class CssSelfSelector extends CssSelector {
+  constructor(pseudo?: (string | CssFunctionalPseudo)[]) {
+    super([{ type: 'self' }], pseudo);
+  }
+
+  _withPseudo(name: string, args?: CssSelectorQuery): CssSelector {
+    const pseudo = args === void 0 ? name : new CssFunctionalPseudo(name, args);
+    return new CssSelfSelector(this.pseudo ? [...this.pseudo, pseudo] : [pseudo]);
+  }
+}
+
+export function self(): CssSelfSelector {
+  return new CssSelfSelector();
 }
