@@ -98,6 +98,8 @@ function emitSelectorPartComment(part: CssSelectorPart): string {
       return part.args ? `${part.name}(${emitSelectorComment(part.args)})` : part.name;
     case 'pseudo-element':
       return part.name;
+    case 'self':
+      return '&';
   }
 }
 
@@ -138,6 +140,8 @@ function emitSelectorPart(map: CssMap, part: CssSelectorPart): string {
       return part.args ? `${part.name}(${emitSelectorQuery(map, part.args)})` : part.name;
     case 'pseudo-element':
       return part.name;
+    case 'self':
+      return '&';
   }
 }
 
