@@ -2,6 +2,7 @@ import type { CssPropertyValue } from '../css/core.js';
 import type { CssMap } from '../map/index.js';
 import {
   CssAtRule,
+  CssClassId,
   CssClassMap,
   CssDashedIdent,
   CssIdent,
@@ -11,14 +12,7 @@ import {
   CssStyleRule,
   type CssNode,
 } from '../css/core.js';
-import {
-  CssClassSelector,
-  CssComplexSelector,
-  CssSelector,
-  type CssFunctionalPseudo,
-  type CssSelectorPart,
-  type CssSelectorQuery,
-} from '../css/selector.js';
+import { CssSelector, type CssSelectorPart, type CssSelectorQuery } from '../css/selector.js';
 import { indent } from './utils.js';
 
 function emitPropertyValue(map: CssMap, value: CssPropertyValue): string {
@@ -27,8 +21,8 @@ function emitPropertyValue(map: CssMap, value: CssPropertyValue): string {
     for (const part of value.template) {
       if (typeof part === 'string') {
         s += part;
-      } else if (part instanceof CssClassSelector) {
-        s += map.getClassId(part.ns.id, part.id);
+      } else if (part instanceof CssClassId) {
+        s += map.getClassId(part);
       } else if (part instanceof CssIdent) {
         s += map.getIdentId(part);
       } else if (part instanceof CssDashedIdent) {
@@ -43,43 +37,14 @@ function emitPropertyValue(map: CssMap, value: CssPropertyValue): string {
   return String(value);
 }
 
-function emitPseudoPart(map: CssMap, p: string | CssFunctionalPseudo): string {
-  if (typeof p === 'string') {
-    return p;
-  }
-  return `${p.name}(${emitSelectorQuery(map, p.args)})`;
-}
-
 function emitSelectorComment(query: CssSelectorQuery): string {
   if (Array.isArray(query)) {
-    return query.map((v) => emitSelectorComment(v)).join(', ');
-  }
-  if (query instanceof CssComplexSelector) {
-    const left = emitSelectorComment(query.left);
-    const right = emitSelectorComment(query.right);
-    return left + ' ' + query.combinator + ' ' + right;
-  }
-  if (query instanceof CssClassSelector) {
-    const pseudo = query.pseudo ? query.pseudo.map(emitPseudoComment).join('') : '';
-    return `${query.ns.id}.${query.id}${pseudo}`;
+    return query.map(emitSelectorComment).join(', ');
   }
   if (query instanceof CssSelector) {
-    return emitSelectorCommentFromParts(query);
+    return query.parts.map(emitSelectorPartComment).join('');
   }
   return '';
-}
-
-function emitSelectorCommentFromParts(sel: CssSelector): string {
-  const left = sel.parts.map(emitSelectorPartComment).join('');
-  const pseudo = sel.pseudo ? sel.pseudo.map(emitPseudoComment).join('') : '';
-  return left + pseudo;
-}
-
-function emitPseudoComment(p: string | CssFunctionalPseudo): string {
-  if (typeof p === 'string') {
-    return p;
-  }
-  return `${p.name}(${emitSelectorComment(p.args)})`;
 }
 
 function emitSelectorPartComment(part: CssSelectorPart): string {
@@ -88,8 +53,12 @@ function emitSelectorPartComment(part: CssSelectorPart): string {
       return part.name;
     case 'universal':
       return '*';
+    case 'self':
+      return '&';
+    case 'id':
+      return `#${typeof part.id === 'string' ? part.id : `${part.id.ns.id}/${part.id.id}`}`;
     case 'class':
-      return `${part.ns.id}.${part.id}`;
+      return `.${typeof part.id === 'string' ? part.id : `${part.id.ns.id}/${part.id.id}`}`;
     case 'attr':
       return part.value !== undefined
         ? `[${part.name}${part.op ?? '='}"${part.value}"]`
@@ -97,9 +66,9 @@ function emitSelectorPartComment(part: CssSelectorPart): string {
     case 'pseudo-class':
       return part.args ? `${part.name}(${emitSelectorComment(part.args)})` : part.name;
     case 'pseudo-element':
-      return part.name;
-    case 'self':
-      return '&';
+      return part.args ? `${part.name}(${emitSelectorComment(part.args)})` : part.name;
+    case 'combinator':
+      return ` ${part.combinator} `;
   }
 }
 
@@ -107,21 +76,10 @@ function emitSelectorQuery(map: CssMap, query: CssSelectorQuery): string {
   if (Array.isArray(query)) {
     return query.map((v) => emitSelectorQuery(map, v)).join(', ');
   }
-  if (query instanceof CssComplexSelector) {
-    const left = emitSelectorQuery(map, query.left);
-    const right = emitSelectorQuery(map, query.right);
-    return left + ' ' + query.combinator + ' ' + right;
-  }
-  if (query instanceof CssClassSelector) {
-    const pseudo = query.pseudo ? query.pseudo.map((p) => emitPseudoPart(map, p)).join('') : '';
-    return `.${map.getClassId(query.ns.id, query.id)}${pseudo}`;
-  }
   if (query instanceof CssSelector) {
-    const left = query.parts.map((p) => emitSelectorPart(map, p)).join('');
-    const pseudo = query.pseudo ? query.pseudo.map((p) => emitPseudoPart(map, p)).join('') : '';
-    return left + pseudo;
+    return query.parts.map((p) => emitSelectorPart(map, p)).join('');
   }
-  return '';
+  return query;
 }
 
 function emitSelectorPart(map: CssMap, part: CssSelectorPart): string {
@@ -130,18 +88,22 @@ function emitSelectorPart(map: CssMap, part: CssSelectorPart): string {
       return part.name;
     case 'universal':
       return '*';
+    case 'self':
+      return '&';
+    case 'id':
+      return `#${typeof part.id === 'string' ? part.id : map.getIdentId(part.id)}`;
     case 'class':
-      return `.${map.getClassId(part.ns.id, part.id)}`;
+      return `.${typeof part.id === 'string' ? part.id : map.getClassId(part.id)}`;
     case 'attr':
-      return part.value !== undefined
+      return part.value !== void 0
         ? `[${part.name}${part.op ?? '='}"${part.value}"]`
         : `[${part.name}]`;
     case 'pseudo-class':
-      return part.args ? `${part.name}(${emitSelectorQuery(map, part.args)})` : part.name;
+      return part.args ? `:${part.name}(${emitSelectorQuery(map, part.args)})` : part.name;
     case 'pseudo-element':
-      return part.name;
-    case 'self':
-      return '&';
+      return part.args ? `::${part.name}(${emitSelectorQuery(map, part.args)})` : part.name;
+    case 'combinator':
+      return ` ${part.combinator} `;
   }
 }
 

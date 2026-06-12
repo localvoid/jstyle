@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import { cleanDirRecursive, updateFile } from 'assetcraft/file';
 
-import type { CssClassSelector } from '../css/selector.js';
+import type { CssClassId } from '../css/core.js';
 import type { CssMap, CssMapNamespace } from '../map/index.js';
 import type { Emitter } from './emitter.js';
 import { CssClassMapState, type CssClassMap, type CssClassMapStateEntry } from '../css/core.js';
@@ -96,7 +96,7 @@ function emitClassMapScripts(map: CssMap, cm: CssClassMap): [js: string, ts: str
       cm.exclude,
       cm.states,
       0,
-      new CssClassMapState(null, 'base', true, map.getClassId(cm.base.ns.id, cm.base.id)),
+      new CssClassMapState(null, 'base', true, map.getClassId(cm.base)),
       0,
     );
     js += `\n);\n`;
@@ -174,7 +174,7 @@ function classMapPopulateTable(
           result,
           stateIndex,
           j,
-          cls == null ? prevState : prevState.push(v.name, k, map.getClassId(cls.ns.id, cls.id)),
+          cls == null ? prevState : prevState.push(v.name, k, map.getClassId(cls)),
           prevStateBits | (k << shift),
         );
       }
@@ -188,7 +188,7 @@ function classMapPopulateTable(
         result,
         j,
         shift + 1,
-        prevState.push(v.name, true, map.getClassId(v.value.ns.id, v.value.id)),
+        prevState.push(v.name, true, map.getClassId(v.value)),
         prevStateBits | (1 << shift),
       );
     }
@@ -204,7 +204,7 @@ function classMapCreateTable(map: CssMap, cm: CssClassMap): string[] {
     table,
     0,
     0,
-    new CssClassMapState(null, 'base', true, map.getClassId(cm.base.ns.id, cm.base.id)),
+    new CssClassMapState(null, 'base', true, map.getClassId(cm.base)),
     0,
   );
   while (table.length > 0) {
@@ -231,12 +231,8 @@ function classMapEmitCondExpr(
     const nextStateMask = prevStateBits | (1 << i);
     i++;
     if (exclude === void 0 || !exclude(prevState)) {
-      const classSelector = s.value as CssClassSelector;
-      const nextState = prevState.push(
-        s.name,
-        true,
-        map.getClassId(classSelector.ns.id, classSelector.id),
-      );
+      const classSelector = s.value as CssClassId;
+      const nextState = prevState.push(s.name, true, map.getClassId(classSelector));
       const depth1 = depth + 1;
       let out = indent(0, `(${s.name} === true\n`);
       out += indent(depth1, '? ');

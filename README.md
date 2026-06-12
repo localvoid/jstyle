@@ -24,7 +24,7 @@ bun add jstyle
 ## Quick Start
 
 ```ts
-import { ns, style, emit } from 'jstyle';
+import { ns, q, style, emit } from 'jstyle';
 import * as p from 'jstyle/props';
 
 const APP = ns('app');
@@ -32,8 +32,12 @@ const APP = ns('app');
 const BUTTON = APP.class('button');
 
 const rules = [
-  style(BUTTON, [p.display('inline-flex'), p.padding('8px 16px'), p.backgroundColor('blue')]),
-  style(BUTTON.hover, [p.backgroundColor('darkblue')]),
+  style(q.class(BUTTON), [
+    p.display('inline-flex'),
+    p.padding('8px 16px'),
+    p.backgroundColor('blue'),
+  ]),
+  style(q.class(BUTTON).hover, [p.backgroundColor('darkblue')]),
 ];
 
 await emit({
@@ -46,7 +50,7 @@ await emit({
 ## Imports
 
 ```ts
-import { ns, style, media, $, env, important } from 'jstyle'; // Core types and factories
+import { ns, q, style, media, $, env, important } from 'jstyle'; // Core types and factories
 import * as p from 'jstyle/props'; // CSS property constructors
 import { emit } from 'jstyle/emit'; // Emit orchestrator
 import { JSEmitter } from 'jstyle/emit/js'; // JS emitter
@@ -98,24 +102,38 @@ style('modal', [important(p.zIndex('9999'))]); // z-index: 9999 !important;
 
 ### Selectors
 
+Create selectors using the `q` factory:
+
+```ts
+const BTN = q.class('button'); // .button
+const TITLE = q.tag('h1'); // h1
+const LINK = q.id('nav-link'); // #nav-link
+const SELF = q.self; // &
+const ANY = q.universal; // *
+```
+
 Pseudo-classes and pseudo-elements via getter properties:
 
 ```ts
-const BTN = NS.class('button');
-BTN.hover; // :hover
-BTN.before; // ::before
-BTN.nthChild('2n+1'); // :nth-child(2n+1)
-BTN.has(NS.class('red')); // :has(.red)
+BTN.hover; // .button:hover
+BTN.before; // .button::before
+BTN.nthChild(2, 1); // .button:nth-child(2n+1)
+BTN.has(q.class('red')); // .button:has(.red)
 ```
 
 Combinators for complex selectors:
 
 ```ts
-const CARD = NS.class('card');
-const CARD_TITLE = CARD.join('title');
+q.class('card').descendant(q.class('card_title')); // .card .card_title
+q.class('card').child(q.class('card_title')); // .card > .card_title
+```
 
-CARD.descendant(CARD_TITLE); // .card .card_title
-CARD.child(CARD_TITLE); // .card > .card_title
+Functional pseudo-classes with selector arguments:
+
+```ts
+q.class('button').is([q.class('a'), q.class('b')]); // .button:is(.a, .b)
+q.class('button').not(q.class('link')); // .button:not(.link)
+q.class('button').where(q.class('link')); // .button:where(.link)
 ```
 
 ### At-Rules

@@ -1,6 +1,5 @@
 import type { CssSelector, CssSelectorQuery } from './selector.js';
 import type { Size } from './size.js';
-import { CssClassSelector } from './selector.js';
 
 /**
  * CSS namespace for scoping class names, idents, and dashed idents.
@@ -16,8 +15,8 @@ export class CssNamespace {
   /**
    * Css Class
    */
-  class(name: string): CssClassSelector {
-    return new CssClassSelector(this, name);
+  class(name: string): CssClassId {
+    return new CssClassId(this, name);
   }
 
   /**
@@ -46,6 +45,19 @@ export class CssNamespace {
 /** Shorthand for creating a {@link CssNamespace}. */
 export function ns(id: string): CssNamespace {
   return new CssNamespace(id);
+}
+
+/**
+ * CSS class name id.
+ */
+export class CssClassId {
+  readonly ns: CssNamespace;
+  readonly id: string;
+
+  constructor(ns: CssNamespace, id: string) {
+    this.ns = ns;
+    this.id = id;
+  }
 }
 
 /**
@@ -285,9 +297,9 @@ export function page(selector: string | undefined, children: CssNode): CssAtRule
  * @property inline - Force inline (ternary) or table-based code generation.
  */
 export interface CssClassMapOptions {
-  readonly base: CssClassSelector;
+  readonly base: CssClassId;
   readonly name?: string;
-  readonly states: Record<string, CssClassSelector | (null | CssClassSelector)[]>;
+  readonly states: Record<string, CssClassId | (null | CssClassId)[]>;
   readonly exclude?: (state: CssClassMapState) => boolean;
   readonly inline?: boolean;
 }
@@ -349,7 +361,7 @@ export class CssClassMapState {
 /** A single state entry in a class map: a name and its class or array of nullable classes. */
 export interface CssClassMapStateEntry {
   name: string;
-  value: CssClassSelector | (CssClassSelector | null)[];
+  value: CssClassId | (CssClassId | null)[];
 }
 
 /**
@@ -359,7 +371,7 @@ export interface CssClassMapStateEntry {
 export class CssClassMap {
   readonly ns: CssNamespace;
   readonly name: string;
-  readonly base: CssClassSelector;
+  readonly base: CssClassId;
   readonly states: CssClassMapStateEntry[];
   readonly exclude: undefined | ((state: CssClassMapState) => boolean);
   readonly inline: boolean;
@@ -402,7 +414,7 @@ export class CssClassMap {
    * Retrieves the class for a named state.
    * For multi-value states, pass an index or string id to select a specific variant.
    */
-  getState(name: string, i?: number | string): CssClassSelector {
+  getState(name: string, i?: number | string): CssClassId {
     if (name === 'base') {
       return this.base;
     }

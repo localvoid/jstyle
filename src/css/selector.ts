@@ -1,414 +1,385 @@
-import type { CssNamespace } from './core.js';
+import type { CssClassId, CssIdent } from './core.js';
 
-/** A functional pseudo-class entry with a name and selector arguments. */
-export class CssFunctionalPseudo {
-  readonly name: string;
-  readonly args: CssSelectorQuery;
-
-  constructor(name: string, args: CssSelectorQuery) {
-    this.name = name;
-    this.args = args;
-  }
-}
-
-/**
- * AnB notation for `:nth-child(an+b)` pseudo-class selectors.
- * Produces CSS like `2n+1`, `3n`, `odd`, `even`, or plain numbers.
- */
-export class AnB {
-  readonly a: number;
-  readonly b: number;
-
-  constructor(a: number, b: number) {
-    this.a = a;
-    this.b = b;
-  }
-
-  toString(): string {
-    if (this.a === 0) return `${this.b}`;
-    if (this.b === 0) return this.a === 1 ? 'n' : `${this.a}n`;
-    return `${this.a}n${this.b > 0 ? '+' : ''}${this.b}`;
-  }
-}
-
-/** Creates an `an+b` value for `:nth-child()` and related pseudo-classes. */
-export function anb(a: number, b: number): AnB {
-  return new AnB(a, b);
-}
-
-export type CssCombinator = ' ' | '>' | '+' | '~';
+export type CssSelectorCombinator = ' ' | '>' | '+' | '~';
 
 export type CssSelectorPart =
   | { type: 'tag'; name: string }
   | { type: 'universal' }
-  | { type: 'class'; ns: CssNamespace; id: string }
+  | { type: 'self' }
+  | { type: 'id'; id: string | CssIdent }
+  | { type: 'class'; id: string | CssClassId }
   | { type: 'attr'; name: string; op?: string; value?: string }
   | { type: 'pseudo-class'; name: string; args?: CssSelectorQuery }
-  | { type: 'pseudo-element'; name: string }
-  | { type: 'self' };
+  | { type: 'pseudo-element'; name: string; args?: CssSelectorQuery }
+  | { type: 'combinator'; combinator: CssSelectorCombinator };
 
 /** Selector query: a CssSelector or array of queries (comma-separated). */
 export type CssSelectorQuery = string | CssSelector | CssSelectorQuery[];
 
-/**
- * Abstract base class for all CSS selectors.
- * Provides shared pseudo-class/pseudo-element getters and combinator methods.
- * Pseudo getters return `CssSelector` (stricter typing — class-specific methods like `join()` are lost).
- */
-export abstract class CssSelector {
+// Compound Selector hierarchy:
+// type ➔ id ➔ class ➔ attribute ➔ pseudo-class ➔ pseudo-element
+
+export interface CssBaseSelector {
   readonly parts: CssSelectorPart[];
-  readonly pseudo: (string | CssFunctionalPseudo)[];
-  readonly combinator?: CssCombinator;
-  readonly right?: CssSelector;
 
-  protected constructor(
-    parts: CssSelectorPart[] = [],
-    pseudo: (string | CssFunctionalPseudo)[] = [],
-    combinator?: CssCombinator,
-    right?: CssSelector,
-  ) {
+  descendant(other: CssSelector): CssBaseSelector;
+  child(other: CssSelector): CssBaseSelector;
+  nextSibling(other: CssSelector): CssBaseSelector;
+  sibling(other: CssSelector): CssBaseSelector;
+}
+export interface CssPseudoElementSelector extends CssBaseSelector {
+  get before(): CssPseudoElementSelector;
+  get after(): CssPseudoElementSelector;
+  get backdrop(): CssPseudoElementSelector;
+  get firstLetter(): CssPseudoElementSelector;
+  get firstLine(): CssPseudoElementSelector;
+  get selection(): CssPseudoElementSelector;
+  get placeholder(): CssPseudoElementSelector;
+  get marker(): CssPseudoElementSelector;
+  get cue(): CssPseudoElementSelector;
+  get webkitScrollbar(): CssPseudoElementSelector;
+  get targetText(): CssPseudoElementSelector;
+  get spellingError(): CssPseudoElementSelector;
+  get grammarError(): CssPseudoElementSelector;
+  get viewTransitionGroup(): CssPseudoElementSelector;
+  get viewTransitionImagePair(): CssPseudoElementSelector;
+  get viewTransitionOld(): CssPseudoElementSelector;
+  get viewTransitionNew(): CssPseudoElementSelector;
+  get fileSelectorButton(): CssPseudoElementSelector;
+
+  highlight(v: string): CssPseudoElementSelector;
+  part(name: string): CssPseudoElementSelector;
+  slotted(name: string): CssPseudoElementSelector;
+}
+
+export interface CssPseudoClassSelector extends CssPseudoElementSelector {
+  get hover(): CssPseudoClassSelector;
+  get active(): CssPseudoClassSelector;
+  get focus(): CssPseudoClassSelector;
+  get focusVisible(): CssPseudoClassSelector;
+  get focusWithin(): CssPseudoClassSelector;
+  get firstChild(): CssPseudoClassSelector;
+  get lastChild(): CssPseudoClassSelector;
+  get firstOfType(): CssPseudoClassSelector;
+  get lastOfType(): CssPseudoClassSelector;
+  get disabled(): CssPseudoClassSelector;
+  get readOnly(): CssPseudoClassSelector;
+  get readWrite(): CssPseudoClassSelector;
+  get checked(): CssPseudoClassSelector;
+  get indeterminate(): CssPseudoClassSelector;
+  get valid(): CssPseudoClassSelector;
+  get invalid(): CssPseudoClassSelector;
+  get required(): CssPseudoClassSelector;
+  get optional(): CssPseudoClassSelector;
+  get fullscreen(): CssPseudoClassSelector;
+  get anyLink(): CssPseudoClassSelector;
+  get link(): CssPseudoClassSelector;
+  get visited(): CssPseudoClassSelector;
+  get autofill(): CssPseudoClassSelector;
+  get placeholderShown(): CssPseudoClassSelector;
+  get inRange(): CssPseudoClassSelector;
+  get outOfRange(): CssPseudoClassSelector;
+  get userValid(): CssPseudoClassSelector;
+  get userInvalid(): CssPseudoClassSelector;
+  get blank(): CssPseudoClassSelector;
+  get pictureInPicture(): CssPseudoClassSelector;
+
+  nthChild(a: number, b?: number): CssPseudoClassSelector;
+  nthLastChild(a: number, b?: number): CssPseudoClassSelector;
+  nthOfType(a: number, b?: number): CssPseudoClassSelector;
+  nthLastOfType(a: number, b?: number): CssPseudoClassSelector;
+
+  dir(v: string): CssPseudoClassSelector;
+  lang(v: string): CssPseudoClassSelector;
+  has(args: CssSelectorQuery): CssPseudoClassSelector;
+  is(args: CssSelectorQuery): CssPseudoClassSelector;
+  where(args: CssSelectorQuery): CssPseudoClassSelector;
+  not(args: CssSelectorQuery): CssPseudoClassSelector;
+}
+export interface CssAttrSelector extends CssPseudoClassSelector {
+  attr(name: string): CssAttrSelector;
+  attr(name: string, value: string, op: string): CssAttrSelector;
+}
+export interface CssClassSelector extends CssAttrSelector {
+  class(id: string | CssClassId): CssClassSelector;
+}
+export interface CssIdSelector extends CssClassSelector {
+  id(id: string | CssIdent): CssIdSelector;
+}
+export interface CssTypeSelector extends CssIdSelector {}
+
+export class CssSelector implements CssTypeSelector {
+  readonly parts: CssSelectorPart[];
+
+  constructor(parts: CssSelectorPart[] = []) {
     this.parts = parts;
-    this.pseudo = pseudo;
-    this.combinator = combinator;
-    this.right = right;
   }
 
-  abstract _withPseudo(name: string, args?: CssSelectorQuery): CssSelector;
-
-  get hover(): CssSelector {
-    return this._withPseudo(':hover');
-  }
-  get active(): CssSelector {
-    return this._withPseudo(':active');
-  }
-  get focus(): CssSelector {
-    return this._withPseudo(':focus');
-  }
-  get focusVisible(): CssSelector {
-    return this._withPseudo(':focus-visible');
-  }
-  get focusWithin(): CssSelector {
-    return this._withPseudo(':focus-within');
-  }
-  get firstChild(): CssSelector {
-    return this._withPseudo(':first-child');
-  }
-  get lastChild(): CssSelector {
-    return this._withPseudo(':last-child');
-  }
-  get firstOfType(): CssSelector {
-    return this._withPseudo(':first-of-type');
-  }
-  get lastOfType(): CssSelector {
-    return this._withPseudo(':last-of-type');
-  }
-  get disabled(): CssSelector {
-    return this._withPseudo(':disabled');
-  }
-  get readOnly(): CssSelector {
-    return this._withPseudo(':read-only');
-  }
-  get readWrite(): CssSelector {
-    return this._withPseudo(':read-write');
-  }
-  get checked(): CssSelector {
-    return this._withPseudo(':checked');
-  }
-  get indeterminate(): CssSelector {
-    return this._withPseudo(':indeterminate');
-  }
-  get valid(): CssSelector {
-    return this._withPseudo(':valid');
-  }
-  get invalid(): CssSelector {
-    return this._withPseudo(':invalid');
-  }
-  get required(): CssSelector {
-    return this._withPseudo(':required');
-  }
-  get optional(): CssSelector {
-    return this._withPseudo(':optional');
-  }
-  get fullscreen(): CssSelector {
-    return this._withPseudo(':fullscreen');
-  }
-  get anyLink(): CssSelector {
-    return this._withPseudo(':any-link');
-  }
-  get link(): CssSelector {
-    return this._withPseudo(':link');
-  }
-  get visited(): CssSelector {
-    return this._withPseudo(':visited');
-  }
-  get autofill(): CssSelector {
-    return this._withPseudo(':autofill');
-  }
-  get placeholderShown(): CssSelector {
-    return this._withPseudo(':placeholder-shown');
-  }
-  get inRange(): CssSelector {
-    return this._withPseudo(':in-range');
-  }
-  get outOfRange(): CssSelector {
-    return this._withPseudo(':out-of-range');
-  }
-  get userValid(): CssSelector {
-    return this._withPseudo(':user-valid');
-  }
-  get userInvalid(): CssSelector {
-    return this._withPseudo(':user-invalid');
-  }
-  get blank(): CssSelector {
-    return this._withPseudo(':blank');
-  }
-  get pictureInPicture(): CssSelector {
-    return this._withPseudo(':picture-in-picture');
+  id(id: string | CssIdent) {
+    return new CssSelector([...this.parts, { type: 'id', id }]);
   }
 
-  nthChild(anb: string | AnB): CssSelector {
-    return this._withPseudo(`:nth-child(${String(anb)})`);
-  }
-  nthLastChild(anb: string | AnB): CssSelector {
-    return this._withPseudo(`:nth-last-child(${String(anb)})`);
-  }
-  nthOfType(anb: string | AnB): CssSelector {
-    return this._withPseudo(`:nth-of-type(${String(anb)})`);
-  }
-  nthLastOfType(anb: string | AnB): CssSelector {
-    return this._withPseudo(`:nth-last-of-type(${String(anb)})`);
-  }
-  dir(v: string): CssSelector {
-    return this._withPseudo(`:dir(${v})`);
-  }
-  lang(v: string): CssSelector {
-    return this._withPseudo(`:lang(${v})`);
-  }
-  has(args: CssSelectorQuery): CssSelector {
-    return this._withPseudo(':has', args);
-  }
-  is(args: CssSelectorQuery): CssSelector {
-    return this._withPseudo(':is', args);
-  }
-  where(args: CssSelectorQuery): CssSelector {
-    return this._withPseudo(':where', args);
-  }
-  not(args: CssSelectorQuery): CssSelector {
-    return this._withPseudo(':not', args);
+  class(id: string | CssClassId) {
+    return new CssSelector([...this.parts, { type: 'class', id }]);
   }
 
-  get before(): CssSelector {
-    return this._withPseudo('::before');
-  }
-  get after(): CssSelector {
-    return this._withPseudo('::after');
-  }
-  get backdrop(): CssSelector {
-    return this._withPseudo('::backdrop');
-  }
-  get firstLetter(): CssSelector {
-    return this._withPseudo('::first-letter');
-  }
-  get firstLine(): CssSelector {
-    return this._withPseudo('::first-line');
-  }
-  get selection(): CssSelector {
-    return this._withPseudo('::selection');
-  }
-  get placeholder(): CssSelector {
-    return this._withPseudo('::placeholder');
-  }
-  get marker(): CssSelector {
-    return this._withPseudo('::marker');
-  }
-  get cue(): CssSelector {
-    return this._withPseudo('::cue');
-  }
-  get webkitScrollbar(): CssSelector {
-    return this._withPseudo('::-webkit-scrollbar');
-  }
-  get targetText(): CssSelector {
-    return this._withPseudo('::target-text');
-  }
-  get spellingError(): CssSelector {
-    return this._withPseudo('::spelling-error');
-  }
-  get grammarError(): CssSelector {
-    return this._withPseudo('::grammar-error');
-  }
-  get viewTransitionGroup(): CssSelector {
-    return this._withPseudo('::view-transition-group');
-  }
-  get viewTransitionImagePair(): CssSelector {
-    return this._withPseudo('::view-transition-image-pair');
-  }
-  get viewTransitionOld(): CssSelector {
-    return this._withPseudo('::view-transition-old');
-  }
-  get viewTransitionNew(): CssSelector {
-    return this._withPseudo('::view-transition-new');
-  }
-  get fileSelectorButton(): CssSelector {
-    return this._withPseudo('::file-selector-button');
+  attr(name: string, value?: string, op: string = '=') {
+    return new CssSelector([...this.parts, { type: 'attr', name, op, value }]);
   }
 
-  highlight(v: string): CssSelector {
-    return this._withPseudo(`::highlight(${v})`);
-  }
-  part(name: string): CssSelector {
-    return this._withPseudo(`::part(${name})`);
-  }
-  slotted(name: string): CssSelector {
-    return this._withPseudo(`::slotted(${name})`);
+  _withPseudoClass(name: string, args?: CssSelectorQuery) {
+    return new CssSelector([...this.parts, { type: 'pseudo-class', name, args }]);
   }
 
-  descendant(other: CssSelector): CssComplexSelector {
-    return new CssComplexSelector(this, ' ', other);
+  _withPseudoElement(name: string, args?: CssSelectorQuery) {
+    return new CssSelector([...this.parts, { type: 'pseudo-element', name, args }]);
   }
 
-  child(other: CssSelector): CssComplexSelector {
-    return new CssComplexSelector(this, '>', other);
+  get hover() {
+    return this._withPseudoClass('hover');
+  }
+  get active() {
+    return this._withPseudoClass('active');
+  }
+  get focus() {
+    return this._withPseudoClass('focus');
+  }
+  get focusVisible() {
+    return this._withPseudoClass('focus-visible');
+  }
+  get focusWithin() {
+    return this._withPseudoClass('focus-within');
+  }
+  get firstChild() {
+    return this._withPseudoClass('first-child');
+  }
+  get lastChild() {
+    return this._withPseudoClass('last-child');
+  }
+  get firstOfType() {
+    return this._withPseudoClass('first-of-type');
+  }
+  get lastOfType() {
+    return this._withPseudoClass('last-of-type');
+  }
+  get disabled() {
+    return this._withPseudoClass('disabled');
+  }
+  get readOnly() {
+    return this._withPseudoClass('read-only');
+  }
+  get readWrite() {
+    return this._withPseudoClass('read-write');
+  }
+  get checked() {
+    return this._withPseudoClass('checked');
+  }
+  get indeterminate() {
+    return this._withPseudoClass('indeterminate');
+  }
+  get valid() {
+    return this._withPseudoClass('valid');
+  }
+  get invalid() {
+    return this._withPseudoClass('invalid');
+  }
+  get required() {
+    return this._withPseudoClass('required');
+  }
+  get optional() {
+    return this._withPseudoClass('optional');
+  }
+  get fullscreen() {
+    return this._withPseudoClass('fullscreen');
+  }
+  get anyLink() {
+    return this._withPseudoClass('any-link');
+  }
+  get link() {
+    return this._withPseudoClass('link');
+  }
+  get visited() {
+    return this._withPseudoClass('visited');
+  }
+  get autofill() {
+    return this._withPseudoClass('autofill');
+  }
+  get placeholderShown() {
+    return this._withPseudoClass('placeholder-shown');
+  }
+  get inRange() {
+    return this._withPseudoClass('in-range');
+  }
+  get outOfRange() {
+    return this._withPseudoClass('out-of-range');
+  }
+  get userValid() {
+    return this._withPseudoClass('user-valid');
+  }
+  get userInvalid() {
+    return this._withPseudoClass('user-invalid');
+  }
+  get blank() {
+    return this._withPseudoClass('blank');
+  }
+  get pictureInPicture() {
+    return this._withPseudoClass('picture-in-picture');
   }
 
-  nextSibling(other: CssSelector): CssComplexSelector {
-    return new CssComplexSelector(this, '+', other);
+  nthChild(a: number, b: number = 0) {
+    return this._withPseudoClass(`nth-child`, anb(a, b));
+  }
+  nthLastChild(a: number, b: number = 0) {
+    return this._withPseudoClass(`nth-last-child`, anb(a, b));
+  }
+  nthOfType(a: number, b: number = 0) {
+    return this._withPseudoClass(`nth-of-type`, anb(a, b));
+  }
+  nthLastOfType(a: number, b: number = 0) {
+    return this._withPseudoClass(`nth-last-of-type`, anb(a, b));
   }
 
-  sibling(other: CssSelector): CssComplexSelector {
-    return new CssComplexSelector(this, '~', other);
+  dir(v: string) {
+    return this._withPseudoClass(`dir`, v);
+  }
+  lang(v: string) {
+    return this._withPseudoClass(`lang`, v);
+  }
+  has(args: CssSelectorQuery) {
+    return this._withPseudoClass('has', args);
+  }
+  is(args: CssSelectorQuery) {
+    return this._withPseudoClass('is', args);
+  }
+  where(args: CssSelectorQuery) {
+    return this._withPseudoClass('where', args);
+  }
+  not(args: CssSelectorQuery) {
+    return this._withPseudoClass('not', args);
+  }
+
+  get before() {
+    return this._withPseudoElement('before');
+  }
+  get after() {
+    return this._withPseudoElement('after');
+  }
+  get backdrop() {
+    return this._withPseudoElement('backdrop');
+  }
+  get firstLetter() {
+    return this._withPseudoElement('first-letter');
+  }
+  get firstLine() {
+    return this._withPseudoElement('first-line');
+  }
+  get selection() {
+    return this._withPseudoElement('selection');
+  }
+  get placeholder() {
+    return this._withPseudoElement('placeholder');
+  }
+  get marker() {
+    return this._withPseudoElement('marker');
+  }
+  get cue() {
+    return this._withPseudoElement('cue');
+  }
+  get webkitScrollbar() {
+    return this._withPseudoElement('-webkit-scrollbar');
+  }
+  get targetText() {
+    return this._withPseudoElement('target-text');
+  }
+  get spellingError() {
+    return this._withPseudoElement('spelling-error');
+  }
+  get grammarError() {
+    return this._withPseudoElement('grammar-error');
+  }
+  get viewTransitionGroup() {
+    return this._withPseudoElement('view-transition-group');
+  }
+  get viewTransitionImagePair() {
+    return this._withPseudoElement('view-transition-image-pair');
+  }
+  get viewTransitionOld() {
+    return this._withPseudoElement('view-transition-old');
+  }
+  get viewTransitionNew() {
+    return this._withPseudoElement('view-transition-new');
+  }
+  get fileSelectorButton() {
+    return this._withPseudoElement('file-selector-button');
+  }
+
+  highlight(v: string) {
+    return this._withPseudoElement(`::highlight`, v);
+  }
+  part(name: string) {
+    return this._withPseudoElement(`::part`, name);
+  }
+  slotted(name: string) {
+    return this._withPseudoElement(`::slotted`, name);
+  }
+
+  descendant(other: CssSelector) {
+    return new CssSelector([
+      ...this.parts,
+      { type: 'combinator', combinator: ' ' },
+      ...other.parts,
+    ]);
+  }
+
+  child(other: CssSelector) {
+    return new CssSelector([
+      ...this.parts,
+      { type: 'combinator', combinator: '>' },
+      ...other.parts,
+    ]);
+  }
+
+  nextSibling(other: CssSelector) {
+    return new CssSelector([
+      ...this.parts,
+      { type: 'combinator', combinator: '+' },
+      ...other.parts,
+    ]);
+  }
+
+  sibling(other: CssSelector) {
+    return new CssSelector([
+      ...this.parts,
+      { type: 'combinator', combinator: '~' },
+      ...other.parts,
+    ]);
   }
 }
 
-/**
- * CSS class selector with namespace and id.
- * Created by `ns.class('name')`.
- */
-export class CssClassSelector extends CssSelector {
-  readonly ns: CssNamespace;
-  readonly id: string;
-
-  constructor(ns: CssNamespace, id: string, pseudo?: (string | CssFunctionalPseudo)[]) {
-    super([], pseudo);
-    this.ns = ns;
-    this.id = id;
-  }
-
-  _withPseudo(name: string, args?: CssSelectorQuery): CssSelector {
-    const pseudo = args === void 0 ? name : new CssFunctionalPseudo(name, args);
-    return new CssClassSelector(
-      this.ns,
-      this.id,
-      this.pseudo ? [...this.pseudo, pseudo] : [pseudo],
-    );
-  }
-
-  join(name: string): CssClassSelector {
-    return new CssClassSelector(this.ns, this.id + '_' + name, this.pseudo);
-  }
+function anb(a: number, b: number) {
+  if (a === 0) return `${b}`;
+  if (b === 0) return a === 1 ? 'n' : `${a}n`;
+  return `${a}n${b > 0 ? '+' : ''}${b}`;
 }
 
-/**
- * CSS element type selector (e.g., `div`, `span`).
- * Created by `div()`.
- */
-export class CssElementSelector extends CssSelector {
-  readonly tag: string;
+export const q = {
+  get self(): CssSelector {
+    return new CssSelector([{ type: 'self' }]);
+  },
 
-  constructor(tag: string, pseudo?: (string | CssFunctionalPseudo)[]) {
-    super([{ type: 'tag', name: tag }], pseudo);
-    this.tag = tag;
-  }
+  get universal(): CssSelector {
+    return new CssSelector([{ type: 'universal' }]);
+  },
 
-  _withPseudo(name: string, args?: CssSelectorQuery): CssSelector {
-    const pseudo = args === void 0 ? name : new CssFunctionalPseudo(name, args);
-    return new CssElementSelector(this.tag, this.pseudo ? [...this.pseudo, pseudo] : [pseudo]);
-  }
+  tag(name: string): CssTypeSelector {
+    return new CssSelector([{ type: 'tag', name }]);
+  },
 
-  class(c: CssClassSelector): CssCompoundSelector {
-    return new CssCompoundSelector(
-      [
-        { type: 'tag', name: this.tag },
-        { type: 'class', ns: c.ns, id: c.id },
-      ],
-      this.pseudo,
-    );
-  }
+  id(id: string | CssIdent): CssIdSelector {
+    return new CssSelector([{ type: 'id', id }]);
+  },
 
-  attr(name: string): CssCompoundSelector;
-  attr(name: string, value: string, op: string): CssCompoundSelector;
-  attr(name: string, value?: string, op: string = '='): CssCompoundSelector {
-    return new CssCompoundSelector(
-      [
-        { type: 'tag', name: this.tag },
-        { type: 'attr', name, op, value },
-      ],
-      this.pseudo,
-    );
-  }
-}
-
-/**
- * CSS compound selector (multiple parts without whitespace).
- * Created by `.class()` or `.attr()` on element/compound selectors.
- */
-export class CssCompoundSelector extends CssSelector {
-  constructor(parts: CssSelectorPart[], pseudo?: (string | CssFunctionalPseudo)[]) {
-    super(parts, pseudo);
-  }
-
-  _withPseudo(name: string, args?: CssSelectorQuery): CssSelector {
-    const pseudo = args === void 0 ? name : new CssFunctionalPseudo(name, args);
-    return new CssCompoundSelector(this.parts, this.pseudo ? [...this.pseudo, pseudo] : [pseudo]);
-  }
-
-  class(cls: CssClassSelector): CssCompoundSelector {
-    return new CssCompoundSelector(
-      [...this.parts, { type: 'class', ns: cls.ns, id: cls.id }],
-      this.pseudo,
-    );
-  }
-
-  addAttr(name: string): CssCompoundSelector {
-    return new CssCompoundSelector([...this.parts, { type: 'attr', name }], this.pseudo);
-  }
-
-  addAttrValue(name: string, value: string, op: string = '='): CssCompoundSelector {
-    return new CssCompoundSelector([...this.parts, { type: 'attr', name, op, value }], this.pseudo);
-  }
-}
-
-/**
- * CSS complex selector (compound selectors connected by combinators).
- * Created by `.descendant()`, `.child()`, `.nextSibling()`, `.sibling()`.
- */
-export class CssComplexSelector extends CssSelector {
-  readonly left: CssSelector;
-  override readonly combinator: CssCombinator;
-  override readonly right: CssSelector;
-
-  constructor(left: CssSelector, combinator: CssCombinator, right: CssSelector) {
-    super([], []);
-    this.left = left;
-    this.combinator = combinator;
-    this.right = right;
-  }
-
-  _withPseudo(name: string, args?: CssSelectorQuery): CssSelector {
-    return new CssComplexSelector(this.left, this.combinator, this.right._withPseudo(name, args));
-  }
-}
-
-export class CssSelfSelector extends CssSelector {
-  constructor(pseudo?: (string | CssFunctionalPseudo)[]) {
-    super([{ type: 'self' }], pseudo);
-  }
-
-  _withPseudo(name: string, args?: CssSelectorQuery): CssSelector {
-    const pseudo = args === void 0 ? name : new CssFunctionalPseudo(name, args);
-    return new CssSelfSelector(this.pseudo ? [...this.pseudo, pseudo] : [pseudo]);
-  }
-}
-
-export function self(): CssSelfSelector {
-  return new CssSelfSelector();
-}
+  class(id: string | CssClassId): CssClassSelector {
+    return new CssSelector([{ type: 'class', id }]);
+  },
+};

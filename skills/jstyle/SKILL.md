@@ -13,7 +13,7 @@ Programmatic TypeScript-first CSS builder.
 `jstyle` uses subpath exports. Import from the correct entry point:
 
 ```ts
-import { ns, style, media } from 'jstyle'; // Core types and factories
+import { ns, q, style, media } from 'jstyle'; // Core types and factories
 import * as p from 'jstyle/props'; // CSS property constructors
 import { emit } from 'jstyle/emit'; // CSS emit orchestrator
 ```
@@ -163,11 +163,19 @@ const rules = [
 
 ### Selectors
 
+Create selectors using the `q` factory:
+
+```ts
+const s = q.class('button'); // .button
+const heading = q.tag('h1'); // h1
+const link = q.id('nav-link'); // #nav-link
+const self = q.self; // &
+const any = q.universal; // *
+```
+
 `CssSelector` has getter properties for constructing pseudo-classes and pseudo-elements selectors:
 
 ```ts
-const s = NS.class('button');
-
 // Pseudo-classes
 s.hover; // :hover
 s.active; // :active
@@ -188,33 +196,25 @@ s.marker; // ::marker
 Functional pseudo-classes take arguments:
 
 ```ts
-s.nthChild('2n+1'); // :nth-child(2n+1)
-s.has(RED); // :has(.red)
-s.is(CARD, BUTTON); // :is(.card, .button)
+s.nthChild(2, 1); // :nth-child(2n+1)
+s.has(q.class('red')); // :has(.red)
+s.is([CARD, BUTTON]); // :is(.card, .button)
 s.not(CARD); // :not(.card)
 s.where(CARD); // :where(.card)
 s.lang('en'); // :lang(en)
 s.dir('ltr'); // :dir(ltr)
 ```
 
-Join with `_` separator:
-
-```ts
-const CARD = NS.class('card');
-const CARD_TITLE = CARD.join('title'); // .card_title
-const CARD_BODY = CARD.join('body'); // .card_body
-```
-
 Use combinators to build complex selectors:
 
 ```ts
-const CARD = NS.class('card');
-const CARD_TITLE = CARD.join('title');
+const CARD = APP.class('card');
+const CARD_TITLE = APP.class('card_title');
 
-CARD.descendant(CARD_TITLE); // .card .card_title
-CARD.child(CARD_TITLE); // .card > .card_title
-CARD.nextSibling(CARD_TITLE); // .card + .card_title
-CARD.sibling(CARD_TITLE); // .card ~ .card_title
+q.class(CARD).descendant(q.class(CARD_TITLE)); // .card .card_title
+q.class(CARD).child(q.class(CARD_TITLE)); // .card > .card_title
+q.class(CARD).nextSibling(q.class(CARD_TITLE)); // .card + .card_title
+q.class(CARD).sibling(q.class(CARD_TITLE)); // .card ~ .card_title
 ```
 
 ### At-Rules
@@ -227,7 +227,6 @@ import {
   container,
   keyframes,
   layer,
-  layerDecl,
   property,
   scope,
   supports,
@@ -342,7 +341,7 @@ Use `namespace.classMap()` to create a class map declaration.
 #### Options
 
 - **`base`** — Required. Default class applied when no states are active.
-- **`states`** — Map of state names to classes. Use `boolean` for toggles, or an array `(null | CssClassSelector)[]` for multi-value states (index-based lookup). `null` means "no class for this index".
+- **`states`** — Map of state names to classes. Use `boolean` for toggles, or an array `(null | CssClassId)[]` for multi-value states (index-based lookup). `null` means "no class for this index".
 - **`name`** — Optional. Override the generated function name (defaults to `base.id`).
 - **`exclude`** — (optional) Predicate `(state: CssClassMapState) => boolean` to exclude invalid state combinations from the output. Call `state.get('stateName')` to read current state value.
 - **`inline`** — (optional) Code generation strategy: `true` for nested ternaries, `false` for lookup table. Defaults to `true` when <4 boolean states, `false` otherwise (always `false` if any state is an array).

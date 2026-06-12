@@ -1,4 +1,4 @@
-import type { CssDashedIdent, CssIdent } from '../css/core.js';
+import type { CssClassId, CssDashedIdent, CssIdent } from '../css/core.js';
 import { IDSet, tagNameIndexToId } from './uid.js';
 
 export class CssMapNamespace {
@@ -40,11 +40,11 @@ export class CssMap {
     }
   }
 
-  getClassId(namespace: string, id: string): string {
-    const ns = this._getNamespace(namespace);
-    let mapped = ns.classes.get(id);
+  getClassId(v: CssClassId): string {
+    const ns = this._getNamespace(v.ns.id);
+    let mapped = ns.classes.get(v.id);
     if (mapped === void 0) {
-      ns.classes.set(id, (mapped = this.classes.next()));
+      ns.classes.set(v.id, (mapped = this.classes.next()));
     }
     return mapped;
   }
